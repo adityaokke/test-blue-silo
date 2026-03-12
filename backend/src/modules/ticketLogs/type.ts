@@ -1,7 +1,7 @@
 // src/modules/ticketLogs/ticketLog.types.ts
 
 import { Types } from "mongoose";
-import { TicketLevel, CriticalValue, TicketStatus } from "../tickets/type";
+import { TicketLevel, TicketCriticalValue, TicketStatus } from "../tickets/type";
 
 export type LogAction =
   | "created"
@@ -13,6 +13,7 @@ export type LogAction =
   | "resolved";
 
 export interface ITicketLog {
+  id: string;
   ticketId: Types.ObjectId;
   action: LogAction;
   performedBy: Types.ObjectId;
@@ -23,7 +24,7 @@ export interface ITicketLog {
   toStatus?: TicketStatus;
   fromLevel?: TicketLevel;
   toLevel?: TicketLevel;
-  criticalValue?: CriticalValue;
+  criticalValue?: TicketCriticalValue;
   note?: string;
 
   createdAt: Date;

@@ -1,95 +1,27 @@
-// src/pages/tickets/TicketListPage.tsx
-
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { ticketService } from "../../services/ticket";
 import { useAuthStore } from "../../store/auth";
-
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-type Priority = "Low" | "Medium" | "High";
-type Status = "New" | "Attending" | "Completed" | "Resolved";
-type Level = "L1" | "L2" | "L3";
-type CriticalValue = "C1" | "C2" | "C3";
-
-interface Ticket {
-  _id: string;
-  ticketNumber: string;
-  title: string;
-  category: string;
-  priority: Priority;
-  status: Status;
-  currentLevel: Level;
-  criticalValue: CriticalValue | null;
-  isEscalated: boolean;
-  createdAt: string;
-}
-
-// ─── Mock Data ────────────────────────────────────────────────────────────────
-
-const MOCK_TICKETS: Ticket[] = [
-  {
-    _id: "1",
-    ticketNumber: "TKT-20250312-001",
-    title: "VPN not connecting after Windows update",
-    category: "Network",
-    priority: "High",
-    status: "New",
-    currentLevel: "L1",
-    criticalValue: null,
-    isEscalated: false,
-    createdAt: "2025-03-12T08:00:00Z",
-  },
-  {
-    _id: "2",
-    ticketNumber: "TKT-20250312-002",
-    title: "Payment confirmation email not sent",
-    category: "Software",
-    priority: "High",
-    status: "Attending",
-    currentLevel: "L2",
-    criticalValue: "C2",
-    isEscalated: true,
-    createdAt: "2025-03-12T09:00:00Z",
-  },
-  {
-    _id: "3",
-    ticketNumber: "TKT-20250312-003",
-    title: "System completely down for all users",
-    category: "Hardware",
-    priority: "High",
-    status: "Attending",
-    currentLevel: "L3",
-    criticalValue: "C1",
-    isEscalated: true,
-    createdAt: "2025-03-12T10:00:00Z",
-  },
-  {
-    _id: "4",
-    ticketNumber: "TKT-20250312-004",
-    title: "Export to CSV missing columns",
-    category: "Software",
-    priority: "Low",
-    status: "Resolved",
-    currentLevel: "L1",
-    criticalValue: null,
-    isEscalated: false,
-    createdAt: "2025-03-11T08:00:00Z",
-  },
-];
+import type {
+  CriticalValue,
+  ITicket,
+  Level,
+  Priority,
+  Status,
+} from "../../types/ticket";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const PRIORITY_STYLE: Record<Priority, string> = {
-  High:   "text-red-400",
+  High: "text-red-400",
   Medium: "text-yellow-400",
-  Low:    "text-slate-400",
+  Low: "text-slate-400",
 };
 
 const STATUS_STYLE: Record<Status, string> = {
-  New:       "bg-sky-500/10 text-sky-400 border border-sky-500/20",
+  New: "bg-sky-500/10 text-sky-400 border border-sky-500/20",
   Attending: "bg-yellow-500/10 text-yellow-400 border border-yellow-500/20",
   Completed: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20",
-  Resolved:  "bg-slate-500/10 text-slate-400 border border-slate-500/20",
 };
 
 const CRITICAL_STYLE: Record<CriticalValue, string> = {
@@ -112,11 +44,32 @@ export default function TicketListPage() {
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
 
+  const [tickets, setTickets] = useState<ITicket[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState<Status | "All">("All");
   const [filterLevel, setFilterLevel] = useState<Level | "All">("All");
 
-  const filtered = MOCK_TICKETS.filter((t) => {
+  useEffect(() => {
+    fetchTickets();
+  }, []);
+
+  const fetchTickets = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const res = await ticketService.getAll();
+      setTickets(res.data);
+    } catch {
+      setError("Failed to load tickets.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filtered = tickets.filter((t) => {
     const matchSearch =
       t.title.toLowerCase().includes(search.toLowerCase()) ||
       t.ticketNumber.toLowerCase().includes(search.toLowerCase());
@@ -127,16 +80,13 @@ export default function TicketListPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200">
-
       {/* Topbar */}
       <header className="border-b border-slate-800 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-7 h-7 rounded bg-sky-500 flex items-center justify-center text-xs font-bold text-white">
             HD
           </div>
-          <span className="text-sm font-semibold tracking-wide">
-            Helpdesk
-          </span>
+          <span className="text-sm font-semibold tracking-wide">Helpdesk</span>
           <span className="text-slate-600">·</span>
           <span className="text-xs text-slate-500 uppercase tracking-widest">
             Ticket System
@@ -159,7 +109,6 @@ export default function TicketListPage() {
       </header>
 
       <main className="max-w-6xl mx-auto px-6 py-8">
-
         {/* Page header */}
         <div className="flex items-center justify-between mb-6">
           <div>
@@ -173,7 +122,7 @@ export default function TicketListPage() {
               onClick={() => navigate("/tickets/create")}
               className="bg-sky-500 hover:bg-sky-400 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
             >
-              + New Ticket
+              New Ticket
             </button>
           )}
         </div>
@@ -234,21 +183,25 @@ export default function TicketListPage() {
               ) : (
                 filtered.map((ticket) => (
                   <tr
-                    key={ticket._id}
-                    onClick={() => navigate(`/tickets/${ticket._id}`)}
+                    key={ticket.id}
+                    onClick={() => navigate(`/tickets/${ticket.id}`)}
                     className="border-b border-slate-800/50 hover:bg-slate-900 transition-colors cursor-pointer"
                   >
                     <td className="px-5 py-3 text-sky-400 font-mono text-xs">
-                      {ticket.ticketNumber}
+                      {ticket.id}
                     </td>
                     <td className="px-5 py-3 text-slate-200 max-w-xs truncate">
                       {ticket.title}
                     </td>
-                    <td className={`px-5 py-3 font-medium ${PRIORITY_STYLE[ticket.priority]}`}>
+                    <td
+                      className={`px-5 py-3 font-medium ${PRIORITY_STYLE[ticket.priority]}`}
+                    >
                       {ticket.priority}
                     </td>
                     <td className="px-5 py-3">
-                      <span className={`px-2 py-0.5 rounded text-xs ${STATUS_STYLE[ticket.status]}`}>
+                      <span
+                        className={`px-2 py-0.5 rounded text-xs ${STATUS_STYLE[ticket.status]}`}
+                      >
                         {ticket.status}
                       </span>
                     </td>
@@ -257,7 +210,9 @@ export default function TicketListPage() {
                     </td>
                     <td className="px-5 py-3">
                       {ticket.criticalValue ? (
-                        <span className={`px-2 py-0.5 rounded text-xs ${CRITICAL_STYLE[ticket.criticalValue]}`}>
+                        <span
+                          className={`px-2 py-0.5 rounded text-xs ${CRITICAL_STYLE[ticket.criticalValue]}`}
+                        >
                           {ticket.criticalValue}
                         </span>
                       ) : (
@@ -273,7 +228,6 @@ export default function TicketListPage() {
             </tbody>
           </table>
         </div>
-
       </main>
     </div>
   );

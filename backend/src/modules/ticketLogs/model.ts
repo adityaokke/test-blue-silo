@@ -48,4 +48,11 @@ const TicketLogSchema = new Schema<ITicketLog>(
   }
 );
 
+TicketLogSchema.set("toJSON", {
+  transform: (_doc, ret) => {
+    ret.id = ret._id.toString();
+    return ret;
+  },
+});
+
 export const TicketLog = model<ITicketLog>("TicketLog", TicketLogSchema);

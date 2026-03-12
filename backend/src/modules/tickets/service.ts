@@ -12,6 +12,42 @@ export const createTicket = async (userId: string, dto: CreateTicketDto) => {
     createdBy: userId,
     status: "New",
     currentLevel: "L1",
+    assignedTo: userId,
   });
   return ticket;
+};
+
+export const getTickets = async (query: {
+  status?: string;
+  priority?: string;
+  currentLevel?: string;
+  search?: string;
+}) => {
+  const filter: Record<string, unknown> = {};
+
+  if (query.status && query.status !== "All") {
+    filter.status = query.status;
+  }
+
+  if (query.priority && query.priority !== "All") {
+    filter.priority = query.priority;
+  }
+
+  if (query.currentLevel && query.currentLevel !== "All") {
+    filter.currentLevel = query.currentLevel;
+  }
+
+  if (query.search) {
+    filter.$or = [
+      { title: { $regex: query.search, $options: "i" } },
+      { ticketNumber: { $regex: query.search, $options: "i" } },
+    ];
+  }
+
+  const tickets = await Ticket.find(filter)
+    .populate("createdBy", "name email role")
+    .populate("assignedTo", "name email role")
+    .sort({ createdAt: -1 });
+
+  return tickets;
 };

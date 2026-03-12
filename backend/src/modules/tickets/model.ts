@@ -1,5 +1,6 @@
 import { Schema, model } from "mongoose";
 import { ITicket } from "./type";
+import { CATEGORIES,  CRITICAL_VALUE,  LEVEL, PRIORITIES, STATUS } from "./constants";
 
 const TicketSchema = new Schema<ITicket>(
   {
@@ -14,7 +15,7 @@ const TicketSchema = new Schema<ITicket>(
     },
     category: {
       type: String,
-      enum: ["Network", "Hardware", "Software", "Security", "Other"],
+      enum: CATEGORIES.map((c) => c.code),
       required: true,
     },
     expectedCompletionAt: {
@@ -23,23 +24,23 @@ const TicketSchema = new Schema<ITicket>(
     },
     priority: {
       type: String,
-      enum: ["Low", "Medium", "High"],
+      enum: PRIORITIES,
       required: true,
     },
     // L2 fields
     criticalValue: {
       type: String,
-      enum: ["C1", "C2", "C3"],
+      enum: CRITICAL_VALUE,
       default: null,
     },
     status: {
       type: String,
-      enum: ["New", "Attending", "Completed"],
+      enum: STATUS,
       default: "New",
     },
     currentLevel: {
       type: String,
-      enum: ["L1", "L2", "L3"],
+      enum: LEVEL,
       default: "L1",
     },
 
@@ -49,11 +50,11 @@ const TicketSchema = new Schema<ITicket>(
       ref: "User",
       required: true,
     },
-    // assignedTo: {
-    //   type: Schema.Types.ObjectId,
-    //   ref: "User",
-    //   default: null,
-    // },
+    assignedTo: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
 
     // Escalation
     // isEscalated: {
@@ -86,6 +87,13 @@ TicketSchema.index({ status: 1, currentLevel: 1 });   // filtered list
 TicketSchema.index({ createdBy: 1 });                  // "my tickets" view
 TicketSchema.index({ assignedTo: 1 });                 // "assigned to me"
 TicketSchema.index({ isEscalated: 1, criticalValue: 1 }); // L3 queue
+
+TicketSchema.set("toJSON", {
+  transform: (_doc, ret) => {
+    ret.id = ret._id.toString();
+    return ret;
+  },
+});
 
 // ─── Model ────────────────────────────────────────────────────────────────────
 

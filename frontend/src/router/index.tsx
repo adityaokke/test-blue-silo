@@ -6,6 +6,7 @@ import NotFoundPage from "../pages/auth/NotFoundPage";
 import TicketListPage from "../pages/tickets/TicketListPage";
 import ProtectedRoute from "../layout/ProtectedRoute";
 import SignupPage from "../pages/auth/SignupPage";
+import CreateTicketPage from "../pages/tickets/CreateTicketPage";
 
 export default function Router() {
   return (
@@ -24,7 +25,7 @@ export default function Router() {
             </ProtectedRoute>
           }
         />
-        {/* <Route
+        <Route
           path="/tickets/create"
           element={
             <ProtectedRoute>
@@ -32,7 +33,7 @@ export default function Router() {
             </ProtectedRoute>
           }
         />
-        <Route
+        {/* <Route
           path="/tickets/:id"
           element={
             <ProtectedRoute>

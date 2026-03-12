@@ -1,14 +1,23 @@
-export type Priority = "Low" | "Medium" | "High";
-export type Status = "New" | "Attending" | "Completed" | "Resolved";
-export type Level = "L1" | "L2" | "L3";
-export type CriticalValue = "C1" | "C2" | "C3";
+import type {
+  CATEGORIES,
+  CRITICAL_VALUE,
+  LEVEL,
+  PRIORITIES, STATUS
+} from "../constants/ticket";
+
+
+export type Priority = typeof PRIORITIES[number];
+export type Category = typeof CATEGORIES[number]["code"];
+export type Status =  typeof STATUS[number];
+export type Level = typeof LEVEL[number];
+export type CriticalValue = typeof CRITICAL_VALUE[number];
 
 export interface ITicket {
-  _id: string;
+  id: string;
   ticketNumber: string;
   title: string;
   description: string;
-  category: string;
+  category: Category;
   priority: Priority;
   status: Status;
   currentLevel: Level;
@@ -23,7 +32,7 @@ export interface ITicket {
 }
 
 export interface ITicketLog {
-  _id: string;
+  id: string;
   ticketId: string;
   action: string;
   performedBy: string;
@@ -40,7 +49,7 @@ export interface ITicketLog {
 export interface ICreateTicketPayload {
   title: string;
   description: string;
-  category: string;
+  category: Category;
   priority: Priority;
   expectedCompletionAt: string;
 }

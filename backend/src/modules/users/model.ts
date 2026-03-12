@@ -58,6 +58,7 @@ UserSchema.methods.comparePassword = async function (
 UserSchema.set("toJSON", {
   transform: (_doc, ret) => {
     ret.password = "<hidden>";
+    ret.id = ret._id.toString();
     return ret;
   },
 });

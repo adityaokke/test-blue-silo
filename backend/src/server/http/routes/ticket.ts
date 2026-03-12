@@ -7,13 +7,13 @@ const router = Router();
 // L1 — create ticket
 router.post(
   "/",
-  // authenticate,
-  // requireRole("L1"),
+  authenticate,
+  requireRole("L1"),
   ticketController.createTicket,
 );
 
 // // All roles — get ticket list
-// router.get("/", authenticate, ticketController.getTickets);
+router.get("/", authenticate, ticketController.getTickets);
 
 // // All roles — get ticket detail
 // router.get("/:id", authenticate, ticketController.getTicketById);
