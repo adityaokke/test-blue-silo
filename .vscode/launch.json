@@ -1,0 +1,53 @@
+// .vscode/launch.json
+
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Dev: ts-node-dev",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "cwd": "${workspaceFolder}/backend",
+      "console": "integratedTerminal",
+      "skipFiles": ["<node_internals>/**"]
+    },
+    // {
+    //   "name": "Debug: ts-node",
+    //   "type": "node",
+    //   "request": "launch",
+    //   "runtimeExecutable": "${workspaceFolder}/backend/node_modules/.bin/ts-node",
+    //   "args": ["src/index.ts"],
+    //   "cwd": "${workspaceFolder}/backend",
+    //   "console": "integratedTerminal",
+    //   "skipFiles": ["<node_internals>/**"],
+    //   "sourceMaps": true,
+    //   "env": {
+    //     "NODE_ENV": "development"
+    //   }
+    // },
+    // {
+    //   "name": "Debug: dist (node)",
+    //   "type": "node",
+    //   "request": "launch",
+    //   "program": "${workspaceFolder}/backend/dist/index.js",
+    //   "preLaunchTask": "npm: build",
+    //   "cwd": "${workspaceFolder}/backend",
+    //   "console": "integratedTerminal",
+    //   "skipFiles": ["<node_internals>/**"],
+    //   "sourceMaps": true,
+    //   "outFiles": ["${workspaceFolder}/backend/dist/**/*.js"]
+    // },
+    // {
+    //   "name": "Test: Jest",
+    //   "type": "node",
+    //   "request": "launch",
+    //   "runtimeExecutable": "npm",
+    //   "runtimeArgs": ["run", "test", "--", "--runInBand"],
+    //   "cwd": "${workspaceFolder}/backend",
+    //   "console": "integratedTerminal",
+    //   "skipFiles": ["<node_internals>/**"]
+    // }
+  ]
+}

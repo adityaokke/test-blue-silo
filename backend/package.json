@@ -1,0 +1,42 @@
+{
+  "name": "test-blue-silo-backend",
+  "version": "1.0.0",
+  "description": "for test to join blue silo",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "clean": "rm -rf dist",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "test-blue-silo"
+  },
+  "keywords": [
+    "test",
+    "blue",
+    "silo"
+  ],
+  "author": "Aditya Okke Sugiarso <adityaokke@gmail.com> (https://adityaokke.com)",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "joi": "^18.0.2",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.2.4",
+    "typescript": "^5.9.3"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^25.4.0",
+    "prettier": "^3.8.1",
+    "ts-node-dev": "^2.0.0"
+  }
+}
