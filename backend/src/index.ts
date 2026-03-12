@@ -1,3 +1,4 @@
+import cors from "cors";
 import express from "express";
 import connectDB from "./config/db";
 import { appEnv } from "./config/env";
@@ -6,7 +7,12 @@ import ticketRoutes from "./server/http/routes/ticket";
 
 const start = async () => {
   const app = express();
-
+  app.use(
+    cors({
+      origin: appEnv.WEB_URL,
+      credentials: true,
+    }),
+  );
   app.use(express.json());
 
   // ─── Routes ───────────────────────────────────────────────────────

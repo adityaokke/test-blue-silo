@@ -15,3 +15,17 @@ export const login = async (req: Request, res: Response) => {
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
+
+export const signup = async (req: Request, res: Response) => {
+  try {
+    const { name, email, password, role } = req.body;
+    const data = await authService.signup(name, email, password, role);
+    res.status(201).json({ success: true, data });
+  } catch (error) {
+    if (error instanceof ApiError) {
+      res.status(error.statusCode).json({ success: false, message: error.message });
+      return;
+    }
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};

@@ -48,6 +48,17 @@
     //   "cwd": "${workspaceFolder}/backend",
     //   "console": "integratedTerminal",
     //   "skipFiles": ["<node_internals>/**"]
-    // }
+    // },
+    {
+      "name": "Dev: Vite",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}/frontend/src",
+      "sourceMapPathOverrides": {
+        "/@fs/*": "${workspaceFolder}/*"
+      },
+      "skipFiles": ["<node_internals>/**"]
+    }
   ]
 }
