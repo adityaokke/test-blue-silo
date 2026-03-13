@@ -1,5 +1,3 @@
-// src/router/index.tsx
-
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import LoginPage from "../pages/auth/LoginPage";
 import NotFoundPage from "../pages/auth/NotFoundPage";
@@ -7,6 +5,7 @@ import TicketListPage from "../pages/tickets/TicketListPage";
 import ProtectedRoute from "../layout/ProtectedRoute";
 import SignupPage from "../pages/auth/SignupPage";
 import CreateTicketPage from "../pages/tickets/CreateTicketPage";
+import TicketDetailPage from "../pages/tickets/TicketDetailPage";
 
 export default function Router() {
   return (
@@ -33,14 +32,14 @@ export default function Router() {
             </ProtectedRoute>
           }
         />
-        {/* <Route
+        <Route
           path="/tickets/:id"
           element={
             <ProtectedRoute>
               <TicketDetailPage />
             </ProtectedRoute>
           }
-        /> */}
+        />
 
         {/* Fallback */}
         <Route path="/" element={<Navigate to="/tickets" replace />} />

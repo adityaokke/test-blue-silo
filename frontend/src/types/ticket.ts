@@ -1,16 +1,17 @@
 import type {
   CATEGORIES,
-  CRITICAL_VALUE,
-  LEVEL,
-  PRIORITIES, STATUS
+  CRITICAL_VALUES,
+  LEVELS,
+  PRIORITIES, STATUSES
 } from "../constants/ticket";
+import type { IUserRole } from "./userRole";
 
 
 export type Priority = typeof PRIORITIES[number];
 export type Category = typeof CATEGORIES[number]["code"];
-export type Status =  typeof STATUS[number];
-export type Level = typeof LEVEL[number];
-export type CriticalValue = typeof CRITICAL_VALUE[number];
+export type Status =  typeof STATUSES[number];
+export type Level = typeof LEVELS[number];
+export type CriticalValue = typeof CRITICAL_VALUES[number];
 
 export interface ITicket {
   id: string;
@@ -21,20 +22,19 @@ export interface ITicket {
   status: Status;
   currentLevel: Level;
   criticalValue: CriticalValue | null;
-  isEscalated: boolean;
   expectedCompletionAt: string;
-  createdBy: string;
-  assignedTo: string | null;
+  createdBy: ITicketUser;
+  assignedTo: ITicketUser | null;
   createdAt: string;
   updatedAt: string;
-  resolvedAt: string | null;
+  completedAt: string | null;
 }
 
 export interface ITicketLog {
   id: string;
   ticketId: string;
   action: string;
-  performedBy: string;
+  performedBy: ITicketUser;
   performedByRole: Level;
   fromStatus?: Status;
   toStatus?: Status;
@@ -43,6 +43,13 @@ export interface ITicketLog {
   criticalValue?: CriticalValue;
   note?: string;
   createdAt: string;
+}
+
+export interface ITicketUser {
+  id: string;
+  name: string;
+  email: string;
+  role: IUserRole;
 }
 
 export interface ICreateTicketPayload {

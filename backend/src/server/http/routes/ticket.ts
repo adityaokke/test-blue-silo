@@ -14,9 +14,8 @@ router.post(
 
 // // All roles — get ticket list
 router.get("/", authenticate, ticketController.getTickets);
-
 // // All roles — get ticket detail
-// router.get("/:id", authenticate, ticketController.getTicketById);
+router.get("/:id", authenticate, ticketController.getTicketById);
 
 // // L1 — update status
 // router.patch(

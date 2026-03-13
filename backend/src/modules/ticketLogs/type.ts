@@ -1,16 +1,8 @@
-// src/modules/ticketLogs/ticketLog.types.ts
-
 import { Types } from "mongoose";
 import { TicketLevel, TicketCriticalValue, TicketStatus } from "../tickets/type";
+import { TICKET_LOG_ACTIONS } from "./constants";
 
-export type LogAction =
-  | "created"
-  | "status_changed"
-  | "escalated"
-  | "critical_value_assigned"
-  | "note_added"
-  | "assigned"
-  | "resolved";
+export type LogAction = typeof TICKET_LOG_ACTIONS[number];
 
 export interface ITicketLog {
   id: string;

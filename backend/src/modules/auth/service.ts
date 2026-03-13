@@ -13,7 +13,7 @@ export const login = async (email: string, password: string) => {
   if (!valid) throw new ApiError(401, "Invalid credentials");
 
   // Get role details from static list
-  const role = USER_ROLES.find((r) => r.id === user.role);
+  const role = USER_ROLES.find((r) => r.id === user.roleId);
   if (!role) throw new ApiError(400, "Invalid role assigned to user");
 
   const payload: IUserPayload = {
@@ -42,7 +42,7 @@ export const signup = async (
   if (!userRole) throw new ApiError(400, "Invalid role specified");
 
   // Create user — password hashing handled by Mongoose pre-save hook
-  const user = await User.create({ name, email, password, role: userRole.id });
+  const user = await User.create({ name, email, password, roleId: userRole.id });
 
   const payload: IUserPayload = {
     id: user._id.toString(),

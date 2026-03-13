@@ -24,7 +24,7 @@ const UserSchema = new Schema<IUser, UserModel, IUserMethods>(
       type: String,
       required: true,
     },
-    role: {
+    roleId: {
       type: Number,
       required: true,
     },

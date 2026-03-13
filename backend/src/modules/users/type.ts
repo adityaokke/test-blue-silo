@@ -4,11 +4,14 @@ export interface IUser {
   id: string;
   name: string;
   email: string;
-  password: string;        // bcrypt hashed
-  role: Number;
+  password: string; // bcrypt hashed
+  roleId: Number;
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
+
+  // relation model
+  role: IUserRole | null;
 }
 
 export interface IUserMethods {

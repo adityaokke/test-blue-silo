@@ -1,22 +1,11 @@
 import { Types } from "mongoose";
-import { CreateTicketDto } from "./dto";
-import { Ticket } from "./model";
+import { CreateTicketDto } from "../dto";
+import { Ticket } from "../model";
+import { ApiError } from "../../../shared/utils/error";
+import { TICKET_LOG_ACTION } from "../../ticketLogs/constants";
+import { TicketLog } from "../../ticketLogs/model";
+import { withTransaction } from "../../../shared/utils/mongose";
 
-export const createTicket = async (userId: string, dto: CreateTicketDto) => {
-  const ticket = await Ticket.create({
-    title: dto.title,
-    description: dto.description,
-    category: dto.category,
-    expectedCompletionAt: dto.expectedCompletionAt,
-    priority: dto.priority,
-
-    createdBy: userId,
-    status: "New",
-    currentLevel: "L1",
-    assignedTo: userId,
-  });
-  return ticket;
-};
 
 export const getTickets = async (query: {
   status?: string;

@@ -3,33 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { ticketService } from "../../services/ticket";
 import { useAuthStore } from "../../store/auth";
 import type {
-  CriticalValue,
   ITicket,
   Level,
   Priority,
   Status,
 } from "../../types/ticket";
+import { CRITICAL_STYLE, PRIORITY_STYLE, STATUS_STYLE } from "../../utils/ticketStyles";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-
-const PRIORITY_STYLE: Record<Priority, string> = {
-  High: "text-red-400",
-  Medium: "text-yellow-400",
-  Low: "text-slate-400",
-};
-
-const STATUS_STYLE: Record<Status, string> = {
-  New: "bg-sky-500/10 text-sky-400 border border-sky-500/20",
-  Attending: "bg-yellow-500/10 text-yellow-400 border border-yellow-500/20",
-  Completed: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20",
-};
-
-const CRITICAL_STYLE: Record<CriticalValue, string> = {
-  C1: "bg-red-500/10 text-red-400 border border-red-500/20",
-  C2: "bg-orange-500/10 text-orange-400 border border-orange-500/20",
-  C3: "bg-slate-500/10 text-slate-400 border border-slate-500/20",
-};
-
 const formatDate = (iso: string) =>
   new Date(iso).toLocaleDateString("en-GB", {
     day: "2-digit",
@@ -67,11 +48,11 @@ export default function TicketListPage() {
     setError("");
     try {
       const res = await ticketService.getAll({
-      status: filterStatus !== "All" ? filterStatus : undefined,
-      priority: filterPriority !== "All" ? filterPriority : undefined,
-      currentLevel: filterLevel !== "All" ? filterLevel : undefined,
-      search: search || undefined,
-    });
+        status: filterStatus !== "All" ? filterStatus : undefined,
+        priority: filterPriority !== "All" ? filterPriority : undefined,
+        currentLevel: filterLevel !== "All" ? filterLevel : undefined,
+        search: search || undefined,
+      });
       setTickets(res.data);
     } catch {
       setError("Failed to load tickets.");
@@ -147,11 +128,12 @@ export default function TicketListPage() {
             <option value="New">New</option>
             <option value="Attending">Attending</option>
             <option value="Completed">Completed</option>
-            <option value="Resolved">Resolved</option>
           </select>
           <select
             value={filterPriority}
-            onChange={(e) => setFilterPriority(e.target.value as Priority | "All")}
+            onChange={(e) =>
+              setFilterPriority(e.target.value as Priority | "All")
+            }
             className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-sky-500 transition-colors"
           >
             <option value="All">All Priorities</option>
@@ -171,6 +153,13 @@ export default function TicketListPage() {
           </select>
         </div>
 
+        {/* Error */}
+        {error && (
+          <div className="mb-5 px-4 py-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+            {error}
+          </div>
+        )}
+
         {/* Table */}
         <div className="rounded-lg border border-slate-800 overflow-hidden">
           <table className="w-full text-sm">
@@ -186,7 +175,13 @@ export default function TicketListPage() {
               </tr>
             </thead>
             <tbody>
-              {tickets.length === 0 ? (
+              {loading ? (
+                <tr>
+                  <td colSpan={7} className="text-center py-12 text-slate-500">
+                    Loading...
+                  </td>
+                </tr>
+              ) : tickets.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="text-center py-12 text-slate-600">
                     No tickets found.

@@ -2,6 +2,8 @@
 
 import { Schema, model } from "mongoose";
 import { ITicketLog } from "./type";
+import { CRITICAL_VALUES, LEVELS, STATUSES } from "../tickets/constants";
+import { TICKET_LOG_ACTIONS } from "./constants";
 
 const TicketLogSchema = new Schema<ITicketLog>(
   {
@@ -13,15 +15,7 @@ const TicketLogSchema = new Schema<ITicketLog>(
     },
     action: {
       type: String,
-      enum: [
-        "created",
-        "status_changed",
-        "escalated",
-        "critical_value_assigned",
-        "note_added",
-        "assigned",
-        "resolved",
-      ],
+      enum: TICKET_LOG_ACTIONS,
       required: true,
     },
     performedBy: {
@@ -31,16 +25,16 @@ const TicketLogSchema = new Schema<ITicketLog>(
     },
     performedByRole: {
       type: String,
-      enum: ["L1", "L2", "L3"],
+      enum: LEVELS,
       required: true,
     },
 
     // Change tracking — all optional
-    fromStatus: { type: String, enum: ["New", "Attending", "Completed", "Resolved"] },
-    toStatus:   { type: String, enum: ["New", "Attending", "Completed", "Resolved"] },
-    fromLevel:  { type: String, enum: ["L1", "L2", "L3"] },
-    toLevel:    { type: String, enum: ["L1", "L2", "L3"] },
-    criticalValue: { type: String, enum: ["C1", "C2", "C3"] },
+    fromStatus: { type: String, enum: STATUSES },
+    toStatus:   { type: String, enum: STATUSES },
+    fromLevel:  { type: String, enum: LEVELS },
+    toLevel:    { type: String, enum: LEVELS },
+    criticalValue: { type: String, enum: CRITICAL_VALUES },
     note: { type: String, trim: true },
   },
   {

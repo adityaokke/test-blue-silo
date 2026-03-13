@@ -1,11 +1,12 @@
 import { Types } from "mongoose";
-import { CATEGORIES, CRITICAL_VALUE, LEVEL, PRIORITIES, STATUS } from "./constants";
+import { CATEGORIES, CRITICAL_VALUES, LEVELS, PRIORITIES, STATUSES } from "./constants";
+import { IUser } from "../users/type";
 
 export type TicketPriority = typeof PRIORITIES[number];
 export type TicketCategory = typeof CATEGORIES[number]["code"];
-export type TicketStatus =  typeof STATUS[number];
-export type TicketLevel = typeof LEVEL[number];
-export type TicketCriticalValue = typeof CRITICAL_VALUE[number];
+export type TicketStatus =  typeof STATUSES[number];
+export type TicketLevel = typeof LEVELS[number];
+export type TicketCriticalValue = typeof CRITICAL_VALUES[number];
 
 // ─── Document Interface ───────────────────────────────────────────────────────
 
@@ -24,14 +25,13 @@ export interface ITicket {
 
   status: TicketStatus;
   currentLevel: TicketLevel;
+  completedAt: Date | null;
 
   createdBy: Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
 
-
   // escalatedAt: Date | null;
-  // resolvedAt: Date | null;
 
   // isEscalated: boolean;
   // closedAt: Date | null;
