@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import { CreateTicketDto } from "./dto";
 import { Ticket } from "./model";
 
@@ -8,7 +9,7 @@ export const createTicket = async (userId: string, dto: CreateTicketDto) => {
     category: dto.category,
     expectedCompletionAt: dto.expectedCompletionAt,
     priority: dto.priority,
-    
+
     createdBy: userId,
     status: "New",
     currentLevel: "L1",
@@ -38,9 +39,11 @@ export const getTickets = async (query: {
   }
 
   if (query.search) {
+    const isValidObjectId = Types.ObjectId.isValid(query.search);
+
     filter.$or = [
       { title: { $regex: query.search, $options: "i" } },
-      { ticketNumber: { $regex: query.search, $options: "i" } },
+      ...(isValidObjectId ? [{ _id: new Types.ObjectId(query.search) }] : []),
     ];
   }
 

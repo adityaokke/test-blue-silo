@@ -14,7 +14,6 @@ export type CriticalValue = typeof CRITICAL_VALUE[number];
 
 export interface ITicket {
   id: string;
-  ticketNumber: string;
   title: string;
   description: string;
   category: Category;

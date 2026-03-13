@@ -50,17 +50,28 @@ export default function TicketListPage() {
 
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState<Status | "All">("All");
+  const [filterPriority, setFilterPriority] = useState<Priority | "All">("All");
   const [filterLevel, setFilterLevel] = useState<Level | "All">("All");
 
   useEffect(() => {
     fetchTickets();
-  }, []);
+  }, [filterStatus, filterPriority, filterLevel]);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => fetchTickets(), 500);
+    return () => clearTimeout(timeout); // cancel if user keeps typing
+  }, [search]);
 
   const fetchTickets = async () => {
     setLoading(true);
     setError("");
     try {
-      const res = await ticketService.getAll();
+      const res = await ticketService.getAll({
+      status: filterStatus !== "All" ? filterStatus : undefined,
+      priority: filterPriority !== "All" ? filterPriority : undefined,
+      currentLevel: filterLevel !== "All" ? filterLevel : undefined,
+      search: search || undefined,
+    });
       setTickets(res.data);
     } catch {
       setError("Failed to load tickets.");
@@ -68,15 +79,6 @@ export default function TicketListPage() {
       setLoading(false);
     }
   };
-
-  const filtered = tickets.filter((t) => {
-    const matchSearch =
-      t.title.toLowerCase().includes(search.toLowerCase()) ||
-      t.ticketNumber.toLowerCase().includes(search.toLowerCase());
-    const matchStatus = filterStatus === "All" || t.status === filterStatus;
-    const matchLevel = filterLevel === "All" || t.currentLevel === filterLevel;
-    return matchSearch && matchStatus && matchLevel;
-  });
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200">
@@ -114,7 +116,7 @@ export default function TicketListPage() {
           <div>
             <h1 className="text-xl font-bold text-white">Tickets</h1>
             <p className="text-slate-500 text-xs mt-0.5">
-              {filtered.length} ticket{filtered.length !== 1 ? "s" : ""} found
+              {tickets.length} ticket{tickets.length !== 1 ? "s" : ""} found
             </p>
           </div>
           {user?.role?.code === "L1" && (
@@ -148,6 +150,16 @@ export default function TicketListPage() {
             <option value="Resolved">Resolved</option>
           </select>
           <select
+            value={filterPriority}
+            onChange={(e) => setFilterPriority(e.target.value as Priority | "All")}
+            className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-sky-500 transition-colors"
+          >
+            <option value="All">All Priorities</option>
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+          </select>
+          <select
             value={filterLevel}
             onChange={(e) => setFilterLevel(e.target.value as Level | "All")}
             className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-sky-500 transition-colors"
@@ -174,14 +186,14 @@ export default function TicketListPage() {
               </tr>
             </thead>
             <tbody>
-              {filtered.length === 0 ? (
+              {tickets.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="text-center py-12 text-slate-600">
                     No tickets found.
                   </td>
                 </tr>
               ) : (
-                filtered.map((ticket) => (
+                tickets.map((ticket) => (
                   <tr
                     key={ticket.id}
                     onClick={() => navigate(`/tickets/${ticket.id}`)}
