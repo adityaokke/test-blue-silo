@@ -58,3 +58,18 @@ export const escalateTicket = async (req: Request, res: Response) => {
   const ticket = await ticketService.escalateTicket(id, req.user, req.body);
   res.json({ success: true, data: ticket });
 };
+
+export const assignCriticalValue = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  if (!id) {
+    res.status(400).json({ success: false, message: "Ticket ID is required" });
+    return;
+  }
+  if (typeof id !== "string") {
+    res.status(400).json({ success: false, message: "Invalid ticket ID format" });
+    return;
+  }
+  const ticket = await ticketService.assignCriticalValue(id, req.user, req.body);
+  res.json({ success: true, data: ticket });
+};

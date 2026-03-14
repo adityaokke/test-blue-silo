@@ -280,6 +280,16 @@ export default function TicketDetailPage() {
                         <span className="text-slate-400">{log.toLevel}</span>
                       </p>
                     )}
+
+                    {/* Critical value */}
+                    {log.criticalValue && (
+                      <p className="text-xs text-slate-500">
+                        Critical Value:{" "}
+                        <span className="text-slate-400">
+                          {log.criticalValue}
+                        </span>
+                      </p>
+                    )}
                   </div>
                 </div>
               ))}

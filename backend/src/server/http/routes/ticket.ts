@@ -27,13 +27,13 @@ router.patch(
   ticketController.escalateTicket,
 );
 
-// // L2 — assign critical value
-// router.patch(
-//   "/:id/critical-value",
-//   authenticate,
-//   requireLevel("L2"),
-//   ticketController.assignCriticalValue,
-// );
+// L2 — assign critical value
+router.patch(
+  "/:id/critical-value",
+  authenticate,
+  requireLevel("L2"),
+  ticketController.assignCriticalValue,
+);
 
 // // L3 — resolve ticket
 // router.patch(

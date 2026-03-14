@@ -1,5 +1,5 @@
 import type { IApiResponse } from "../types/api";
-import type { IAssignCriticalPayload, ICreateTicketPayload, IEscalatePayload, IResolvePayload, ITicket, ITicketLog, IUpdateStatusPayload, Level, Priority, Status } from "../types/ticket";
+import type { IAssignCriticalPayload, ICreateTicketPayload, IEscalatePayload, ITicket, ITicketLog, IUpdateStatusPayload, Level, Priority, Status } from "../types/ticket";
 import api from "./api";
 
 export const ticketService = {
@@ -44,14 +44,14 @@ export const ticketService = {
     return res.data;
   },
 
-  // // PATCH /tickets/:id/critical-value — L2 only
-  // assignCriticalValue: async (
-  //   id: string,
-  //   payload: IAssignCriticalPayload
-  // ): Promise<IApiResponse<ITicket>> => {
-  //   const res = await api.patch<IApiResponse<ITicket>>(`/tickets/${id}/critical-value`, payload);
-  //   return res.data;
-  // },
+  // PATCH /tickets/:id/critical-value — L2 only
+  assignCriticalValue: async (
+    id: string,
+    payload: IAssignCriticalPayload
+  ): Promise<IApiResponse<ITicket>> => {
+    const res = await api.patch<IApiResponse<ITicket>>(`/tickets/${id}/critical-value`, payload);
+    return res.data;
+  },
 
   // // PATCH /tickets/:id/resolve — L3 only
   // resolve: async (
