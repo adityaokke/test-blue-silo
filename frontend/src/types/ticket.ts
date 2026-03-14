@@ -35,13 +35,13 @@ export interface ITicketLog {
   ticketId: string;
   action: string;
   performedBy: ITicketUser;
-  performedByRole: Level;
+  performedByRoleLevel: Level;
   fromStatus?: Status;
   toStatus?: Status;
   fromLevel?: Level;
   toLevel?: Level;
   criticalValue?: CriticalValue;
-  note?: string;
+  note: string;
   createdAt: string;
 }
 
@@ -62,15 +62,17 @@ export interface ICreateTicketPayload {
 
 export interface IUpdateStatusPayload {
   status: Status;
+  note: string;
 }
 
 export interface IEscalatePayload {
+  assignedTo: string;
   note: string;
 }
 
 export interface IAssignCriticalPayload {
   criticalValue: CriticalValue;
-  note?: string;
+  note: string;
 }
 
 export interface IResolvePayload {

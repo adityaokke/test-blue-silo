@@ -79,7 +79,7 @@ export default function TicketListPage() {
           <span className="text-xs text-slate-500">
             {user?.name}
             <span className="ml-2 bg-slate-800 text-slate-400 px-2 py-0.5 rounded text-xs">
-              {user?.role?.code} - {user?.role?.name}
+              {user?.role?.level} - {user?.role?.name}
             </span>
           </span>
           <button
@@ -100,7 +100,7 @@ export default function TicketListPage() {
               {tickets.length} ticket{tickets.length !== 1 ? "s" : ""} found
             </p>
           </div>
-          {user?.role?.code === "L1" && (
+          {user?.role?.level === "L1" && (
             <button
               onClick={() => navigate("/tickets/create")}
               className="bg-sky-500 hover:bg-sky-400 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"

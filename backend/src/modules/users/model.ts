@@ -59,6 +59,16 @@ UserSchema.set("toJSON", {
   transform: (_doc, ret) => {
     ret.password = "<hidden>";
     ret.id = ret._id.toString();
+    (ret as any)._id = undefined;
+    return ret;
+  },
+});
+
+UserSchema.set("toObject", {
+  transform: (_doc, ret) => {
+    ret.password = "<hidden>";
+    ret.id = ret._id.toString();
+    (ret as any)._id = undefined;
     return ret;
   },
 });

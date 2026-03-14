@@ -1,11 +1,11 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { IUserPayload } from "../types/user";
+import type { IAuthUser } from "../types/user";
 
 interface AuthStore {
-  user: IUserPayload | null;
+  user: IAuthUser | null;
   token: string | null;
-  setAuth: (user: IUserPayload, token: string) => void;
+  setAuth: (user: IAuthUser, token: string) => void;
   logout: () => void;
 }
 

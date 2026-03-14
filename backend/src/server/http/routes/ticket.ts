@@ -1,43 +1,37 @@
 import { Router } from "express";
-import { authenticate, requireRole } from "../middleware";
+import { authenticate, requireLevel } from "../middleware";
 import * as ticketController from "../../../modules/tickets/controller";
 
 const router = Router();
 
 // L1 — create ticket
-router.post(
-  "/",
-  authenticate,
-  requireRole("L1"),
-  ticketController.createTicket,
-);
+router.post("/", authenticate, requireLevel("L1"), ticketController.createTicket);
 
-// // All roles — get ticket list
 router.get("/", authenticate, ticketController.getTickets);
-// // All roles — get ticket detail
+
 router.get("/:id", authenticate, ticketController.getTicketById);
 
-// // L1 — update status
-// router.patch(
-//   "/:id/status",
-//   authenticate,
-//   requireRole("L1"),
-//   ticketController.updateStatus,
-// );
+// update status
+router.patch(
+  "/:id/status",
+  authenticate,
+  requireLevel("L1", "L2", "L3"),
+  ticketController.updateStatus,
+);
 
-// // L1 or L2 — escalate
-// router.patch(
-//   "/:id/escalate",
-//   authenticate,
-//   requireRole("L1", "L2"),
-//   ticketController.escalateTicket,
-// );
+// L1 or L2 — escalate
+router.patch(
+  "/:id/escalate",
+  authenticate,
+  requireLevel("L1", "L2"),
+  ticketController.escalateTicket,
+);
 
 // // L2 — assign critical value
 // router.patch(
 //   "/:id/critical-value",
 //   authenticate,
-//   requireRole("L2"),
+//   requireLevel("L2"),
 //   ticketController.assignCriticalValue,
 // );
 
@@ -45,7 +39,7 @@ router.get("/:id", authenticate, ticketController.getTicketById);
 // router.patch(
 //   "/:id/resolve",
 //   authenticate,
-//   requireRole("L3"),
+//   requireLevel("L3"),
 //   ticketController.resolveTicket,
 // );
 

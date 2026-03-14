@@ -1,31 +1,26 @@
 import { Types } from "mongoose";
-import { CreateTicketDto } from "../dto";
-import { Ticket } from "../model";
 import { ApiError } from "../../../shared/utils/error";
-import { TICKET_LOG_ACTION } from "../../ticketLogs/constants";
-import { TicketLog } from "../../ticketLogs/model";
-import { withTransaction } from "../../../shared/utils/mongose";
-import { findByRoleId } from "../../userRoles/repository";
+import * as userRoleRepository from "../../userRoles/repository";
 import { IUser } from "../../users/type";
-
-
+import { Ticket } from "../model";
 
 export const getTicketById = async (id: string) => {
   if (!Types.ObjectId.isValid(id)) {
     throw new ApiError(400, "Invalid ticket ID format");
   }
-  const ticket = await Ticket.findById(id)
+  const item = await Ticket.findById(id)
     .populate<{ createdBy: IUser }>("createdBy", "name email roleId")
-    .populate<{ assignedTo: IUser }>("assignedTo", "name email roleId")
-    .lean();
+    .populate<{ assignedTo: IUser }>("assignedTo", "name email roleId");
 
-  if (!ticket) throw new ApiError(404, "Ticket not found");
+  if (!item) throw new ApiError(404, "Ticket not found");
 
-  if (ticket.createdBy) {
-    ticket.createdBy.role = findByRoleId(ticket.createdBy.roleId) || null;
+  const result = item.toObject();
+
+  if (result.createdBy) {
+    result.createdBy.role = userRoleRepository.findByRoleId(result.createdBy.roleId) || null;
   }
-  if (ticket.assignedTo) {
-    ticket.assignedTo.role = findByRoleId(ticket.assignedTo.roleId) || null;
+  if (result.assignedTo) {
+    result.assignedTo.role = userRoleRepository.findByRoleId(result.assignedTo.roleId) || null;
   }
-  return ticket;
+  return result;
 };

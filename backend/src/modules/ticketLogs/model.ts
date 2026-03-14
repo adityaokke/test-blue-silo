@@ -23,7 +23,7 @@ const TicketLogSchema = new Schema<ITicketLog>(
       ref: "User",
       required: true,
     },
-    performedByRole: {
+    performedByRoleLevel: {
       type: String,
       enum: LEVELS,
       required: true,
@@ -45,6 +45,7 @@ const TicketLogSchema = new Schema<ITicketLog>(
 TicketLogSchema.set("toJSON", {
   transform: (_doc, ret) => {
     ret.id = ret._id.toString();
+    (ret as any)._id = undefined;
     return ret;
   },
 });

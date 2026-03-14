@@ -9,7 +9,7 @@ export interface ITicketLog {
   ticketId: Types.ObjectId;
   action: LogAction;
   performedBy: Types.ObjectId;
-  performedByRole: TicketLevel;
+  performedByRoleLevel: TicketLevel;
 
   // Optional change tracking fields
   fromStatus?: TicketStatus;

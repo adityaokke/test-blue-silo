@@ -1,11 +1,5 @@
 import { Types } from "mongoose";
-import { CreateTicketDto } from "../dto";
 import { Ticket } from "../model";
-import { ApiError } from "../../../shared/utils/error";
-import { TICKET_LOG_ACTION } from "../../ticketLogs/constants";
-import { TicketLog } from "../../ticketLogs/model";
-import { withTransaction } from "../../../shared/utils/mongose";
-
 
 export const getTickets = async (query: {
   status?: string;

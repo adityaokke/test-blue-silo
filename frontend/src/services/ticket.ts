@@ -35,7 +35,7 @@ export const ticketService = {
     return res.data;
   },
 
-  // PATCH /tickets/:id/escalate — L1 or L2
+  // PATCH /tickets/:id/escalate from L1 to L2 or L2 to L3
   escalate: async (
     id: string,
     payload: IEscalatePayload
@@ -44,36 +44,36 @@ export const ticketService = {
     return res.data;
   },
 
-  // PATCH /tickets/:id/critical-value — L2 only
-  assignCriticalValue: async (
-    id: string,
-    payload: IAssignCriticalPayload
-  ): Promise<IApiResponse<ITicket>> => {
-    const res = await api.patch<IApiResponse<ITicket>>(`/tickets/${id}/critical-value`, payload);
-    return res.data;
-  },
+  // // PATCH /tickets/:id/critical-value — L2 only
+  // assignCriticalValue: async (
+  //   id: string,
+  //   payload: IAssignCriticalPayload
+  // ): Promise<IApiResponse<ITicket>> => {
+  //   const res = await api.patch<IApiResponse<ITicket>>(`/tickets/${id}/critical-value`, payload);
+  //   return res.data;
+  // },
 
-  // PATCH /tickets/:id/resolve — L3 only
-  resolve: async (
-    id: string,
-    payload: IResolvePayload
-  ): Promise<IApiResponse<ITicket>> => {
-    const res = await api.patch<IApiResponse<ITicket>>(`/tickets/${id}/resolve`, payload);
-    return res.data;
-  },
+  // // PATCH /tickets/:id/resolve — L3 only
+  // resolve: async (
+  //   id: string,
+  //   payload: IResolvePayload
+  // ): Promise<IApiResponse<ITicket>> => {
+  //   const res = await api.patch<IApiResponse<ITicket>>(`/tickets/${id}/resolve`, payload);
+  //   return res.data;
+  // },
 
-  // GET /tickets/:id/logs
+  // // GET /tickets/:id/logs
   getLogs: async (id: string): Promise<IApiResponse<ITicketLog[]>> => {
     const res = await api.get<IApiResponse<ITicketLog[]>>(`/tickets/${id}/logs`);
     return res.data;
   },
 
-  // POST /tickets/:id/logs — L2 or L3
-  addLog: async (
-    id: string,
-    note: string
-  ): Promise<IApiResponse<ITicketLog>> => {
-    const res = await api.post<IApiResponse<ITicketLog>>(`/tickets/${id}/logs`, { note });
-    return res.data;
-  },
+  // // POST /tickets/:id/logs — L2 or L3
+  // addLog: async (
+  //   id: string,
+  //   note: string
+  // ): Promise<IApiResponse<ITicketLog>> => {
+  //   const res = await api.post<IApiResponse<ITicketLog>>(`/tickets/${id}/logs`, { note });
+  //   return res.data;
+  // },
 };

@@ -7,6 +7,7 @@ import {
   PRIORITY_STYLE,
   STATUS_STYLE,
 } from "../../utils/ticketStyles";
+import { useAuthStore } from "../../store/auth";
 
 const formatDate = (iso: string) =>
   new Date(iso).toLocaleDateString("en-GB", {
@@ -20,6 +21,8 @@ const formatDate = (iso: string) =>
 export default function TicketDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+
+  const user = useAuthStore((state) => state.user);
 
   const [ticket, setTicket] = useState<ITicket | null>(null);
   const [logs, setLogs] = useState<ITicketLog[]>([]);
@@ -45,6 +48,13 @@ export default function TicketDetailPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleUpdate = () => {
+    if (!user || !ticket) return;
+    navigate(
+      `/tickets/${ticket.id}/update/${ticket.currentLevel.toLowerCase()}`,
+    );
   };
 
   if (loading) {
@@ -73,6 +83,20 @@ export default function TicketDetailPage() {
         >
           ← Back
         </button>
+        {user &&
+          ticket &&
+          user.role.level === ticket.currentLevel &&
+          ticket.status !== "Completed" && (
+            <>
+              <span className="text-slate-700">|</span>
+              <button
+                onClick={handleUpdate}
+                className="bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
+              >
+                Update
+              </button>
+            </>
+          )}
         <span className="text-slate-700">|</span>
         <span className="text-xs text-slate-500 font-mono">{ticket.id}</span>
       </header>
@@ -204,38 +228,56 @@ export default function TicketDetailPage() {
           ) : (
             <div className="space-y-4">
               {logs.map((log) => (
-                <div key={log.id} className="flex gap-4">
-                  {/* Timeline dot */}
-                  <div className="flex flex-col items-center">
-                    <div className="w-2 h-2 rounded-full bg-sky-500 mt-1.5 shrink-0" />
+                <div key={log.id} className="flex gap-3">
+                  {/* Timeline */}
+                  <div className="flex flex-col items-center pt-1">
+                    <div className="w-2 h-2 rounded-full bg-sky-500 shrink-0" />
                     <div className="w-px flex-1 bg-slate-800 mt-1" />
                   </div>
-                  {/* Log content */}
-                  <div className="pb-4 flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs font-medium text-slate-300 capitalize">
+
+                  {/* Content */}
+                  <div className="pb-5 flex-1 min-w-0">
+                    {/* Header row */}
+                    <div className="flex items-center gap-2 flex-wrap mb-1">
+                      <span className="text-xs font-semibold text-slate-300 capitalize">
                         {log.action.replace(/_/g, " ")}
                       </span>
-                      <span className="text-xs text-slate-600">·</span>
+                      <span className="text-slate-700">·</span>
                       <span className="text-xs text-slate-500">
-                        {log.performedByRole}
+                        {log.performedBy?.name}
                       </span>
-                      <span className="text-xs text-slate-600">·</span>
+                      <span className="text-slate-700">·</span>
+                      <span className="text-xs text-slate-500">
+                        {log.performedBy?.role?.name}
+                      </span>
+                      <span className="text-slate-700">·</span>
                       <span className="text-xs text-slate-600">
                         {formatDate(log.createdAt)}
                       </span>
                     </div>
+
+                    {/* Note */}
                     {log.note && (
-                      <p className="text-sm text-slate-400">{log.note}</p>
+                      <p className="text-sm text-slate-400 mb-1">{log.note}</p>
                     )}
+
+                    {/* Status change */}
                     {log.fromStatus && log.toStatus && (
                       <p className="text-xs text-slate-500">
-                        Status: {log.fromStatus} → {log.toStatus}
+                        Status:{" "}
+                        <span className="text-slate-400">{log.fromStatus}</span>
+                        {" → "}
+                        <span className="text-slate-400">{log.toStatus}</span>
                       </p>
                     )}
+
+                    {/* Level change */}
                     {log.fromLevel && log.toLevel && (
                       <p className="text-xs text-slate-500">
-                        Level: {log.fromLevel} → {log.toLevel}
+                        Level:{" "}
+                        <span className="text-slate-400">{log.fromLevel}</span>
+                        {" → "}
+                        <span className="text-slate-400">{log.toLevel}</span>
                       </p>
                     )}
                   </div>

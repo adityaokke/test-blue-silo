@@ -6,6 +6,7 @@ import ProtectedRoute from "../layout/ProtectedRoute";
 import SignupPage from "../pages/auth/SignupPage";
 import CreateTicketPage from "../pages/tickets/CreateTicketPage";
 import TicketDetailPage from "../pages/tickets/TicketDetailPage";
+import UpdateTicketL1Page from "../pages/tickets/UpdateTicketL1Page";
 
 export default function Router() {
   return (
@@ -37,6 +38,14 @@ export default function Router() {
           element={
             <ProtectedRoute>
               <TicketDetailPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/tickets/:id/update/l1"
+          element={
+            <ProtectedRoute>
+              <UpdateTicketL1Page />
             </ProtectedRoute>
           }
         />

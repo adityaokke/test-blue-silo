@@ -35,7 +35,7 @@ export const createTicket = async (userId: string, dto: CreateTicketDto) => {
           ticketId: ticket._id,
           action: TICKET_LOG_ACTION.CREATED,
           performedBy: new Types.ObjectId(userId),
-          performedByRole: "L1",
+          performedByRoleLevel: "L1",
           note: "Ticket created",
         },
       ],

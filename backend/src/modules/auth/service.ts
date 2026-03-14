@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import { appEnv } from "../../config/env";
 import { ApiError } from "../../shared/utils/error";
 import { User } from "../users/model";
-import { IUserPayload } from "../users/type";
+import { IAuthUser } from "../users/type";
 import { USER_ROLES } from "../userRoles/model";
 
 export const login = async (email: string, password: string) => {
@@ -16,7 +16,7 @@ export const login = async (email: string, password: string) => {
   const role = USER_ROLES.find((r) => r.id === user.roleId);
   if (!role) throw new ApiError(400, "Invalid role assigned to user");
 
-  const payload: IUserPayload = {
+  const payload: IAuthUser = {
     id: user._id.toString(),
     name: user.name,
     email: user.email,
@@ -38,13 +38,13 @@ export const signup = async (
   const existing = await User.findOne({ email });
   if (existing) throw new ApiError(409, "Email already registered");
 
-  const userRole = await USER_ROLES.find((r) => r.code === role);
+  const userRole = await USER_ROLES.find((r) => r.level === role);
   if (!userRole) throw new ApiError(400, "Invalid role specified");
 
   // Create user — password hashing handled by Mongoose pre-save hook
   const user = await User.create({ name, email, password, roleId: userRole.id });
 
-  const payload: IUserPayload = {
+  const payload: IAuthUser = {
     id: user._id.toString(),
     name: user.name,
     email: user.email,

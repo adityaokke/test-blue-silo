@@ -1,6 +1,6 @@
 import type { IUserRole } from "./userRole";
 
-export interface IUserPayload {
+export interface IAuthUser {
   id: string;
   name: string;
   email: string;

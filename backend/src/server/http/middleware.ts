@@ -1,9 +1,9 @@
 import { NextFunction, Response } from "express";
 import jwt from "jsonwebtoken";
 import { appEnv } from "../../config/env";
-import { UserRoleCode } from "../../modules/userRoles/type";
-import { IUserPayload } from "../../modules/users/type";
+import { IAuthUser } from "../../modules/users/type";
 import { AuthRequest } from "../shared/types/authRequest";
+import { TicketLevel } from "../../modules/tickets/type";
 
 export const authenticate = (
   req: AuthRequest,
@@ -26,7 +26,7 @@ export const authenticate = (
     const decoded = jwt.verify(
       token,
       appEnv.JWT_SECRET,
-    ) as unknown as IUserPayload;
+    ) as unknown as IAuthUser;
     req.user = decoded;
     next();
   } catch {
@@ -34,9 +34,9 @@ export const authenticate = (
   }
 };
 
-export const requireRole = (...roles: UserRoleCode[]) => {
+export const requireLevel = (...levels: TicketLevel[]) => {
   return (req: AuthRequest, res: Response, next: NextFunction) => {
-    if (!roles.includes(req.user.role.code)) {
+    if (!levels.includes(req.user.role.level)) {
       return res.status(403).json({ success: false, message: "Forbidden" });
     }
     next();

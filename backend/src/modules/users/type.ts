@@ -5,7 +5,7 @@ export interface IUser {
   name: string;
   email: string;
   password: string; // bcrypt hashed
-  roleId: Number;
+  roleId: number;
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -19,7 +19,7 @@ export interface IUserMethods {
 }
 
 // For use in JWT payload and request context
-export interface IUserPayload {
+export interface IAuthUser {
   id: string;
   name: string;
   email: string;

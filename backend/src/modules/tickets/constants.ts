@@ -1,3 +1,5 @@
+import { TicketStatus } from "./type";
+
 export const CATEGORIES = [
   { code: "INC", name: "Incident" },
   { code: "BUG", name: "Bug" },

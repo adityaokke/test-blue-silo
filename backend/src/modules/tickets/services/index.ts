@@ -5,18 +5,20 @@ import { ApiError } from "../../../shared/utils/error";
 import { TICKET_LOG_ACTION } from "../../ticketLogs/constants";
 import { TicketLog } from "../../ticketLogs/model";
 import { withTransaction } from "../../../shared/utils/mongose";
-import { IUserPayload } from "../../users/type";
+import { IAuthUser } from "../../users/type";
 
 export * from "./createTicket";
 export * from "./getTicketById";
 export * from "./getTickets";
+export * from "./escalateTicket";
+export * from "./updateStatus";
 
 
 // ticket.service.ts
 
 // export const escalateTicket = async (
 //   id: string,
-//   user: IUserPayload,
+//   user: IAuthUser,
 //   note: string
 // ) => {
 //   const ticket = await Ticket.findById(id);
@@ -42,7 +44,7 @@ export * from "./getTickets";
 
 // export const assignCriticalValue = async (
 //   id: string,
-//   user: IUserPayload,
+//   user: IAuthUser,
 //   criticalValue: string,
 //   note?: string
 // ) => {
@@ -62,7 +64,7 @@ export * from "./getTickets";
 
 // export const updateStatus = async (
 //   id: string,
-//   user: IUserPayload,
+//   user: IAuthUser,
 //   status: string
 // ) => {
 //   const ticket = await Ticket.findById(id);
@@ -82,7 +84,7 @@ export * from "./getTickets";
 
 // export const resolveTicket = async (
 //   id: string,
-//   user: IUserPayload,
+//   user: IAuthUser,
 //   note: string
 // ) => {
 //   const ticket = await Ticket.findById(id);

@@ -1,12 +1,11 @@
-
-
-
 import { ApiError } from "../../shared/utils/error";
 import { TicketLog } from "./model";
 import { Types } from "mongoose";
 import { LogAction } from "./type";
-import { IUserPayload } from "../users/type";
+import { IAuthUser, IUser } from "../users/type";
 import { Ticket } from "../tickets/model";
+import * as userRoleRepository from "../userRoles/repository";
+
 // ─── Get logs by ticket ID ────────────────────────────────────────────────────
 
 export const getLogsByTicketId = async (ticketId: string) => {
@@ -14,18 +13,25 @@ export const getLogsByTicketId = async (ticketId: string) => {
     throw new ApiError(400, "Invalid ticket ID");
   }
 
-  const logs = await TicketLog.find({ ticketId })
-    .populate("performedBy", "name email role")
+  const items = await TicketLog.find({ ticketId })
+    .populate<{ performedBy: IUser }>("performedBy", "name email roleId")
     .sort({ createdAt: 1 }); // oldest first — chronological order
 
-  return logs;
+  const result = items.map((item) => {
+    const obj = item.toObject();
+    if (obj.performedBy) {
+      obj.performedBy.role = userRoleRepository.findByRoleId(obj.performedBy.roleId) || null;
+    }
+    return obj;
+  });
+  return result;
 };
 
 // ─── Add a log entry ──────────────────────────────────────────────────────────
 
 export const addLog = async (
   ticketId: string,
-  user: IUserPayload,
+  user: IAuthUser,
   action: LogAction,
   payload: {
     note?: string;
@@ -34,7 +40,7 @@ export const addLog = async (
     fromLevel?: string;
     toLevel?: string;
     criticalValue?: string;
-  }
+  },
 ) => {
   if (!Types.ObjectId.isValid(ticketId)) {
     throw new ApiError(400, "Invalid ticket ID");
@@ -47,7 +53,7 @@ export const addLog = async (
     ticketId: new Types.ObjectId(ticketId),
     action,
     performedBy: new Types.ObjectId(user.id),
-    performedByRole: user.role.code,
+    performedByRoleLevel: user.role.level,
     ...payload,
   });
 

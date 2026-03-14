@@ -5,6 +5,7 @@ import { appEnv } from "../config/env";
 import authRoutes from "./http/routes/auth";
 import ticketRoutes from "./http/routes/ticket";
 import ticketLogRoutes from "./http/routes/ticketLog";
+import userRoutes from "./http/routes/user";
 import { errorMiddleware } from "./shared/middleware/error";
 
 export const startServer = async () => {
@@ -21,7 +22,8 @@ export const startServer = async () => {
   app.use("/api/auth", authRoutes);
   app.use("/api/tickets", ticketRoutes);
   app.use("/api/tickets/:ticketId/logs", ticketLogRoutes);
-  
+  app.use("/api/users", userRoutes);
+
   // ─── 404 ──────────────────────────────────────────────────────────
   app.use((_req, res) => {
     res.status(404).json({ success: false, message: "Route not found" });

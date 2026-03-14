@@ -1,7 +1,7 @@
+import type { Level } from "./ticket";
+
 export interface IUserRole {
   id: number;
   name: string;
-  code: UserRoleCode;
+  level: Level;
 }
-
-export type UserRoleCode = "L1" | "L2" | "L3";
