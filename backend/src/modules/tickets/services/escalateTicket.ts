@@ -29,6 +29,10 @@ export const escalateTicket = async (
       throw new ApiError(400, "Ticket is already at L3, cannot escalate further");
     }
 
+    if (ticket.currentLevel === "L2" && !["C1", "C2"].includes(ticket.criticalValue ?? "")) {
+      throw new ApiError(400, "Critical value must be C1 or C2 before escalating to L3");
+    }
+
     const fromLevel = ticket.currentLevel;
     const toLevel = fromLevel === "L1" ? "L2" : "L3";
 

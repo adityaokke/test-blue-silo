@@ -2,13 +2,12 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ticketService } from "../../services/ticket";
 import { useAuthStore } from "../../store/auth";
-import type {
-  ITicket,
-  Level,
-  Priority,
-  Status,
-} from "../../types/ticket";
-import { CRITICAL_STYLE, PRIORITY_STYLE, STATUS_STYLE } from "../../utils/ticketStyles";
+import type { ITicket, Level, Priority, Status } from "../../types/ticket";
+import {
+  CRITICAL_STYLE,
+  PRIORITY_STYLE,
+  STATUS_STYLE,
+} from "../../utils/ticketStyles";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const formatDate = (iso: string) =>
@@ -32,7 +31,9 @@ export default function TicketListPage() {
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState<Status | "All">("All");
   const [filterPriority, setFilterPriority] = useState<Priority | "All">("All");
-  const [filterLevel, setFilterLevel] = useState<Level | "All">("All");
+  const [filterLevel, setFilterLevel] = useState<Level | "All">(
+    user?.role.level ?? "All",
+  );
 
   useEffect(() => {
     fetchTickets();

@@ -8,6 +8,7 @@ import CreateTicketPage from "../pages/tickets/CreateTicketPage";
 import TicketDetailPage from "../pages/tickets/TicketDetailPage";
 import UpdateTicketL1Page from "../pages/tickets/UpdateTicketL1Page";
 import UpdateTicketL2Page from "../pages/tickets/UpdateTicketL2Page";
+import UpdateTicketL3Page from "../pages/tickets/UpdateTicketL3Page";
 
 export default function Router() {
   return (
@@ -55,6 +56,14 @@ export default function Router() {
           element={
             <ProtectedRoute>
               <UpdateTicketL2Page />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/tickets/:id/update/l3"
+          element={
+            <ProtectedRoute>
+              <UpdateTicketL3Page />
             </ProtectedRoute>
           }
         />
