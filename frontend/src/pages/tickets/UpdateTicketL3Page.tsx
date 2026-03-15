@@ -17,9 +17,6 @@ export default function UpdateTicketL3Page() {
   const [status, setStatus] = useState<Status>("New");
   const [statusNote, setStatusNote] = useState("");
 
-  // ─── Resolve ──────────────────────────────────────────────────────
-//   const [resolveNote, setResolveNote] = useState("");
-
   useEffect(() => {
     if (id) fetchTicket(id);
   }, [id]);
@@ -53,20 +50,6 @@ export default function UpdateTicketL3Page() {
       setSubmitting(false);
     }
   };
-
-//   const handleResolve = async () => {
-//     if (!id || !resolveNote) return;
-//     setSubmitting(true);
-//     setError("");
-//     try {
-//       await ticketService.resolve(id, { note: resolveNote });
-//       navigate(`/tickets/${id}`);
-//     } catch {
-//       setError("Failed to resolve ticket.");
-//     } finally {
-//       setSubmitting(false);
-//     }
-//   };
 
   if (loading) {
     return (
@@ -168,37 +151,6 @@ export default function UpdateTicketL3Page() {
             {submitting ? "Updating..." : "Update Status"}
           </button>
         </div>
-
-        {/* Resolve Ticket */}
-        {/* <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
-          <p className="text-xs text-slate-400 uppercase tracking-widest font-medium">
-            Resolve Ticket
-          </p>
-          <p className="text-xs text-slate-500">
-            Resolving will mark this ticket as completed and close it permanently.
-          </p>
-
-          <div>
-            <label className="block text-xs text-slate-500 mb-2 uppercase tracking-widest">
-              Resolution Note <span className="text-red-500">*</span>
-            </label>
-            <textarea
-              value={resolveNote}
-              onChange={(e) => setResolveNote(e.target.value)}
-              placeholder="Describe how the issue was resolved..."
-              rows={4}
-              className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-sky-500 transition-colors resize-none"
-            />
-          </div>
-
-          <button
-            onClick={handleResolve}
-            disabled={submitting || !resolveNote}
-            className="w-full bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold py-2.5 rounded-lg transition-colors"
-          >
-            {submitting ? "Resolving..." : "Resolve Ticket"}
-          </button>
-        </div> */}
 
       </main>
     </div>
