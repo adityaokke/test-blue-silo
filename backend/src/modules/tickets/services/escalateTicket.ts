@@ -1,5 +1,3 @@
-// src/modules/tickets/ticket.service.ts
-
 import { Types } from "mongoose";
 import { Ticket } from "../model";
 import { ApiError } from "../../../shared/utils/error";

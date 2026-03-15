@@ -2,7 +2,7 @@ import { Types } from "mongoose";
 import { TicketLevel, TicketCriticalValue, TicketStatus } from "../tickets/type";
 import { TICKET_LOG_ACTIONS } from "./constants";
 
-export type LogAction = typeof TICKET_LOG_ACTIONS[number];
+export type LogAction = (typeof TICKET_LOG_ACTIONS)[number];
 
 export interface ITicketLog {
   id: string;

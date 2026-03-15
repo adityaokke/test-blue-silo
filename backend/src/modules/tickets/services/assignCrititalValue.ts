@@ -9,7 +9,7 @@ import { TICKET_LOG_ACTION } from "../../ticketLogs/constants";
 export const assignCriticalValue = async (
   id: string,
   user: IAuthUser,
-  payload: { criticalValue: string; note: string }
+  payload: { criticalValue: string; note: string },
 ) => {
   if (!Types.ObjectId.isValid(id)) throw new ApiError(400, "Invalid ticket ID");
 
@@ -35,7 +35,7 @@ export const assignCriticalValue = async (
           note: payload.note,
         },
       ],
-      { session }
+      { session },
     );
 
     return ticket;

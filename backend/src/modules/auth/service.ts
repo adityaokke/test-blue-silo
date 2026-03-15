@@ -28,12 +28,7 @@ export const login = async (email: string, password: string) => {
   return { token, user: payload };
 };
 
-export const signup = async (
-  name: string,
-  email: string,
-  password: string,
-  role: string
-) => {
+export const signup = async (name: string, email: string, password: string, role: string) => {
   // Check if email already exists
   const existing = await User.findOne({ email });
   if (existing) throw new ApiError(409, "Email already registered");

@@ -13,9 +13,7 @@ interface Env {
 }
 
 const schema = Joi.object<Env>({
-  NODE_ENV: Joi.string()
-    .valid("development", "production", "test")
-    .default("development"),
+  NODE_ENV: Joi.string().valid("development", "production", "test").default("development"),
   PORT: Joi.number().default(3000),
   WEB_URL: Joi.string().uri().required(),
   MONGODB_URI: Joi.string().required(),

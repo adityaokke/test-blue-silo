@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { ticketService } from "../../services/ticket";
 import { useAuthStore } from "../../store/auth";
 import type { ITicket, Level, Priority, Status } from "../../types/ticket";
@@ -28,12 +28,50 @@ export default function TicketListPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const [search, setSearch] = useState("");
-  const [filterStatus, setFilterStatus] = useState<Status | "All">("All");
-  const [filterPriority, setFilterPriority] = useState<Priority | "All">("All");
-  const [filterLevel, setFilterLevel] = useState<Level | "All">(
-    user?.role.level ?? "All",
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const [search, setSearch] = useState(searchParams.get("search") ?? "");
+  const [filterStatus, setFilterStatus] = useState<Status | "All">(
+    (searchParams.get("status") as Status) ?? "All",
   );
+  const [filterPriority, setFilterPriority] = useState<Priority | "All">(
+    (searchParams.get("priority") as Priority) ?? "All",
+  );
+  const [filterLevel, setFilterLevel] = useState<Level | "All">(
+    (searchParams.get("level") as Level) ?? user?.role.level ?? "All",
+  );
+
+  const handleSearch = (val: string) => {
+    setSearch(val);
+    setSearchParams((prev) => {
+      prev.set("search", val);
+      return prev;
+    });
+  };
+
+  const handleFilterStatus = (val: string) => {
+    setFilterStatus(val as Status | "All");
+    setSearchParams((prev) => {
+      prev.set("status", val);
+      return prev;
+    });
+  };
+
+  const handleFilterPriority = (val: string) => {
+    setFilterPriority(val as Priority | "All");
+    setSearchParams((prev) => {
+      prev.set("priority", val);
+      return prev;
+    });
+  };
+
+  const handleFilterLevel = (val: string) => {
+    setFilterLevel(val as Level | "All");
+    setSearchParams((prev) => {
+      prev.set("level", val);
+      return prev;
+    });
+  };
 
   useEffect(() => {
     fetchTickets();
@@ -48,12 +86,15 @@ export default function TicketListPage() {
     setLoading(true);
     setError("");
     try {
-      const res = await ticketService.getAll({
-        status: filterStatus !== "All" ? filterStatus : undefined,
-        priority: filterPriority !== "All" ? filterPriority : undefined,
-        currentLevel: filterLevel !== "All" ? filterLevel : undefined,
-        search: search || undefined,
-      });
+      const [res] = await Promise.all([
+        ticketService.getAll({
+          status: filterStatus !== "All" ? filterStatus : undefined,
+          priority: filterPriority !== "All" ? filterPriority : undefined,
+          currentLevel: filterLevel !== "All" ? filterLevel : undefined,
+          search: search || undefined,
+        }),
+        new Promise((resolve) => setTimeout(resolve, 1000)), // ← minimum 1s
+      ]);
       setTickets(res.data);
     } catch {
       setError("Failed to load tickets.");
@@ -117,12 +158,12 @@ export default function TicketListPage() {
             type="text"
             placeholder="Search by title or ticket number..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => handleSearch(e.target.value)}
             className="bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-sky-500 transition-colors w-72"
           />
           <select
             value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value as Status | "All")}
+            onChange={(e) => handleFilterStatus(e.target.value)}
             className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-sky-500 transition-colors"
           >
             <option value="All">All Status</option>
@@ -132,9 +173,7 @@ export default function TicketListPage() {
           </select>
           <select
             value={filterPriority}
-            onChange={(e) =>
-              setFilterPriority(e.target.value as Priority | "All")
-            }
+            onChange={(e) => handleFilterPriority(e.target.value)}
             className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-sky-500 transition-colors"
           >
             <option value="All">All Priorities</option>
@@ -144,7 +183,7 @@ export default function TicketListPage() {
           </select>
           <select
             value={filterLevel}
-            onChange={(e) => setFilterLevel(e.target.value as Level | "All")}
+            onChange={(e) => handleFilterLevel(e.target.value)}
             className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-sky-500 transition-colors"
           >
             <option value="All">All Levels</option>
@@ -177,11 +216,33 @@ export default function TicketListPage() {
             </thead>
             <tbody>
               {loading ? (
-                <tr>
-                  <td colSpan={7} className="text-center py-12 text-slate-500">
-                    Loading...
-                  </td>
-                </tr>
+                <>
+                  {[...Array(5)].map((_, i) => (
+                    <tr key={i} className="border-b border-slate-800/50">
+                      <td className="px-5 py-4">
+                        <div className="h-3 bg-slate-800 rounded animate-pulse w-36" />
+                      </td>
+                      <td className="px-5 py-4">
+                        <div className="h-3 bg-slate-800 rounded animate-pulse w-52" />
+                      </td>
+                      <td className="px-5 py-4">
+                        <div className="h-3 bg-slate-800 rounded animate-pulse w-14" />
+                      </td>
+                      <td className="px-5 py-4">
+                        <div className="h-5 bg-slate-800 rounded animate-pulse w-20" />
+                      </td>
+                      <td className="px-5 py-4">
+                        <div className="h-3 bg-slate-800 rounded animate-pulse w-8" />
+                      </td>
+                      <td className="px-5 py-4">
+                        <div className="h-5 bg-slate-800 rounded animate-pulse w-10" />
+                      </td>
+                      <td className="px-5 py-4">
+                        <div className="h-3 bg-slate-800 rounded animate-pulse w-24" />
+                      </td>
+                    </tr>
+                  ))}
+                </>
               ) : tickets.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="text-center py-12 text-slate-600">

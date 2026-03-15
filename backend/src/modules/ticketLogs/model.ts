@@ -1,5 +1,3 @@
-// src/modules/ticketLogs/ticketLog.model.ts
-
 import { Schema, model } from "mongoose";
 import { ITicketLog } from "./type";
 import { CRITICAL_VALUES, LEVELS, STATUSES } from "../tickets/constants";
@@ -11,7 +9,7 @@ const TicketLogSchema = new Schema<ITicketLog>(
       type: Schema.Types.ObjectId,
       ref: "Ticket",
       required: true,
-      index: true,             // always queried by ticketId
+      index: true, // always queried by ticketId
     },
     action: {
       type: String,
@@ -31,15 +29,15 @@ const TicketLogSchema = new Schema<ITicketLog>(
 
     // Change tracking — all optional
     fromStatus: { type: String, enum: STATUSES },
-    toStatus:   { type: String, enum: STATUSES },
-    fromLevel:  { type: String, enum: LEVELS },
-    toLevel:    { type: String, enum: LEVELS },
+    toStatus: { type: String, enum: STATUSES },
+    fromLevel: { type: String, enum: LEVELS },
+    toLevel: { type: String, enum: LEVELS },
     criticalValue: { type: String, enum: CRITICAL_VALUES },
     note: { type: String, trim: true },
   },
   {
     timestamps: { createdAt: true, updatedAt: false }, // logs are immutable
-  }
+  },
 );
 
 TicketLogSchema.set("toJSON", {

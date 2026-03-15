@@ -35,15 +35,4 @@ router.patch(
   ticketController.assignCriticalValue,
 );
 
-// // L3 — resolve ticket
-// router.patch(
-//   "/:id/resolve",
-//   authenticate,
-//   requireLevel("L3"),
-//   ticketController.resolveTicket,
-// );
-
-// // All roles — get ticket logs
-// router.get("/:id/logs", authenticate, ticketController.getTicketLogs);
-
 export default router;

@@ -1,7 +1,6 @@
 import { USER_ROLES } from "./model";
 import { IUserRole } from "./type";
 
-
 export const findByRoleId = (id: number): IUserRole | undefined =>
   USER_ROLES.find((r) => r.id === id);
 

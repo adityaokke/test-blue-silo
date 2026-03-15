@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { AuthRequest } from "../../server/shared/types/authRequest";
 import * as ticketService from "./services";
-import { ApiError } from "../../shared/utils/error";
 
 export const createTicket = async (req: AuthRequest, res: Response) => {
   const ticket = await ticketService.createTicket(req.user.id, req.body);

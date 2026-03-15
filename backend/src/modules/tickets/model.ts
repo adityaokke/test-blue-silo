@@ -27,23 +27,22 @@ const TicketSchema = new Schema<ITicket>(
       enum: PRIORITIES,
       required: true,
     },
-    // L2 fields
-    criticalValue: {
+    currentLevel: {
       type: String,
-      enum: CRITICAL_VALUES,
-      default: null,
+      enum: LEVELS,
+      default: "L1",
     },
     status: {
       type: String,
       enum: STATUSES,
       default: "New",
     },
-    currentLevel: {
+    // L2 fields
+    criticalValue: {
       type: String,
-      enum: LEVELS,
-      default: "L1",
+      enum: CRITICAL_VALUES,
+      default: null,
     },
-
     // Ownership
     createdBy: {
       type: Schema.Types.ObjectId,
@@ -55,26 +54,11 @@ const TicketSchema = new Schema<ITicket>(
       ref: "User",
       default: null,
     },
-
-    // Escalation
-    // isEscalated: {
-    //   type: Boolean,
-    //   default: false,
-    // },
-    // escalatedAt: {
-    //   type: Date,
-    //   default: null,
-    // },
-
     // Closure
     completedAt: {
       type: Date,
       default: null,
     },
-    // closedAt: {
-    //   type: Date,
-    //   default: null,
-    // },
   },
   {
     timestamps: true, // auto-manages createdAt & updatedAt

@@ -53,27 +53,9 @@ export const ticketService = {
     return res.data;
   },
 
-  // // PATCH /tickets/:id/resolve — L3 only
-  // resolve: async (
-  //   id: string,
-  //   payload: IResolvePayload
-  // ): Promise<IApiResponse<ITicket>> => {
-  //   const res = await api.patch<IApiResponse<ITicket>>(`/tickets/${id}/resolve`, payload);
-  //   return res.data;
-  // },
-
-  // // GET /tickets/:id/logs
+  // GET /tickets/:id/logs
   getLogs: async (id: string): Promise<IApiResponse<ITicketLog[]>> => {
     const res = await api.get<IApiResponse<ITicketLog[]>>(`/tickets/${id}/logs`);
     return res.data;
   },
-
-  // // POST /tickets/:id/logs — L2 or L3
-  // addLog: async (
-  //   id: string,
-  //   note: string
-  // ): Promise<IApiResponse<ITicketLog>> => {
-  //   const res = await api.post<IApiResponse<ITicketLog>>(`/tickets/${id}/logs`, { note });
-  //   return res.data;
-  // },
 };
