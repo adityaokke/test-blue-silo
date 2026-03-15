@@ -93,7 +93,7 @@ export default function TicketListPage() {
           currentLevel: filterLevel !== "All" ? filterLevel : undefined,
           search: search || undefined,
         }),
-        new Promise((resolve) => setTimeout(resolve, 1000)), // ← minimum 1s
+        new Promise((resolve) => setTimeout(resolve, 500)),
       ]);
       setTickets(res.data);
     } catch {
