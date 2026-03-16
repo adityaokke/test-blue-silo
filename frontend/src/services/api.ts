@@ -1,14 +1,15 @@
 import axios from "axios";
 import { useAuthStore } from "../store/auth";
+import { ENV } from "../config/env";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: ENV.API_URL,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// ─── Request Interceptor — attach token ───────────────────────────────────────
+// ─── Request Interceptor - attach token ───────────────────────────────────────
 
 api.interceptors.request.use((config) => {
   const token = useAuthStore.getState().token;
@@ -20,7 +21,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// ─── Response Interceptor — handle 401 ───────────────────────────────────────
+// ─── Response Interceptor - handle 401 ───────────────────────────────────────
 
 api.interceptors.response.use(
   (response) => response,
@@ -31,7 +32,7 @@ api.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;

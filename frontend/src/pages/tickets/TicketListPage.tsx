@@ -3,11 +3,8 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { ticketService } from "../../services/ticket";
 import { useAuthStore } from "../../store/auth";
 import type { ITicket, Level, Priority, Status } from "../../types/ticket";
-import {
-  CRITICAL_STYLE,
-  PRIORITY_STYLE,
-  STATUS_STYLE,
-} from "../../utils/ticketStyles";
+import { CRITICAL_STYLE, PRIORITY_STYLE, STATUS_STYLE } from "../../utils/ticketStyles";
+import { ENV } from "../../config/env";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const formatDate = (iso: string) =>
@@ -40,6 +37,8 @@ export default function TicketListPage() {
   const [filterLevel, setFilterLevel] = useState<Level | "All">(
     (searchParams.get("level") as Level) ?? user?.role.level ?? "All",
   );
+
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
 
   const handleSearch = (val: string) => {
     setSearch(val);
@@ -74,34 +73,36 @@ export default function TicketListPage() {
   };
 
   useEffect(() => {
-    fetchTickets();
-  }, [filterStatus, filterPriority, filterLevel]);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => fetchTickets(), 500);
-    return () => clearTimeout(timeout); // cancel if user keeps typing
+    const timeout = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 500);
+    return () => clearTimeout(timeout);
   }, [search]);
 
-  const fetchTickets = async () => {
-    setLoading(true);
-    setError("");
-    try {
-      const [res] = await Promise.all([
-        ticketService.getAll({
-          status: filterStatus !== "All" ? filterStatus : undefined,
-          priority: filterPriority !== "All" ? filterPriority : undefined,
-          currentLevel: filterLevel !== "All" ? filterLevel : undefined,
-          search: search || undefined,
-        }),
-        new Promise((resolve) => setTimeout(resolve, 500)),
-      ]);
-      setTickets(res.data);
-    } catch {
-      setError("Failed to load tickets.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    const fetchTickets = async () => {
+      setLoading(true);
+      setError("");
+      try {
+        const [res] = await Promise.all([
+          ticketService.getAll({
+            status: filterStatus !== "All" ? filterStatus : undefined,
+            priority: filterPriority !== "All" ? filterPriority : undefined,
+            currentLevel: filterLevel !== "All" ? filterLevel : undefined,
+            search: debouncedSearch || undefined,
+          }),
+          new Promise((resolve) => setTimeout(resolve, ENV.MIN_LOADING_TIMEOUT)),
+        ]);
+        setTickets(res.data);
+      } catch {
+        setError("Failed to load tickets.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTickets();
+  }, [filterStatus, filterPriority, filterLevel, debouncedSearch]);
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200">
@@ -113,9 +114,7 @@ export default function TicketListPage() {
           </div>
           <span className="text-sm font-semibold tracking-wide">Helpdesk</span>
           <span className="text-slate-600">·</span>
-          <span className="text-xs text-slate-500 uppercase tracking-widest">
-            Ticket System
-          </span>
+          <span className="text-xs text-slate-500 uppercase tracking-widest">Ticket System</span>
         </div>
         <div className="flex items-center gap-4">
           <span className="text-xs text-slate-500">
@@ -256,15 +255,9 @@ export default function TicketListPage() {
                     onClick={() => navigate(`/tickets/${ticket.id}`)}
                     className="border-b border-slate-800/50 hover:bg-slate-900 transition-colors cursor-pointer"
                   >
-                    <td className="px-5 py-3 text-sky-400 font-mono text-xs">
-                      {ticket.id}
-                    </td>
-                    <td className="px-5 py-3 text-slate-200 max-w-xs truncate">
-                      {ticket.title}
-                    </td>
-                    <td
-                      className={`px-5 py-3 font-medium ${PRIORITY_STYLE[ticket.priority]}`}
-                    >
+                    <td className="px-5 py-3 text-sky-400 font-mono text-xs">{ticket.id}</td>
+                    <td className="px-5 py-3 text-slate-200 max-w-xs truncate">{ticket.title}</td>
+                    <td className={`px-5 py-3 font-medium ${PRIORITY_STYLE[ticket.priority]}`}>
                       {ticket.priority}
                     </td>
                     <td className="px-5 py-3">
@@ -274,9 +267,7 @@ export default function TicketListPage() {
                         {ticket.status}
                       </span>
                     </td>
-                    <td className="px-5 py-3 text-slate-400">
-                      {ticket.currentLevel}
-                    </td>
+                    <td className="px-5 py-3 text-slate-400">{ticket.currentLevel}</td>
                     <td className="px-5 py-3">
                       {ticket.criticalValue ? (
                         <span
@@ -285,7 +276,7 @@ export default function TicketListPage() {
                           {ticket.criticalValue}
                         </span>
                       ) : (
-                        <span className="text-slate-700">—</span>
+                        <span className="text-slate-700">-</span>
                       )}
                     </td>
                     <td className="px-5 py-3 text-slate-500 text-xs">

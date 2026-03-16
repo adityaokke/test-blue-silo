@@ -8,9 +8,7 @@ export default function NotFoundPage() {
       <div className="text-center">
         <p className="text-6xl font-bold text-slate-700">404</p>
         <p className="text-slate-400 mt-2 mb-6">Page not found</p>
-        <button onClick={() => navigate("/tickets")}>
-          Back to Tickets
-        </button>
+        <button onClick={() => navigate("/tickets")}>Back to Tickets</button>
       </div>
     </div>
   );

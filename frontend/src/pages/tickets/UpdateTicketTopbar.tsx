@@ -10,14 +10,12 @@ export default function UpdateTopbar({ ticket }: { ticket: ITicket }) {
         onClick={() => navigate(`/tickets/${ticket.id}`)}
         className="text-slate-500 hover:text-slate-300 transition-colors text-sm"
       >
-        ← Back
+        Back
       </button>
       <span className="text-slate-700">|</span>
       <span className="text-xs text-slate-500 font-mono">{ticket.id}</span>
       <span className="text-slate-700">|</span>
-      <span className="text-xs text-slate-400">
-        {ticket.currentLevel} Update
-      </span>
+      <span className="text-xs text-slate-400">{ticket.currentLevel} Update</span>
     </header>
   );
 }

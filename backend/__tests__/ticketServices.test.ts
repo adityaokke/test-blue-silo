@@ -13,7 +13,9 @@ jest.mock("mongoose", () => ({
   ...jest.requireActual("mongoose"),
   Types: {
     ObjectId: Object.assign(
-      function ObjectId(id: string) { return id; },
+      function ObjectId(id: string) {
+        return id;
+      },
       { isValid: (id: string) => /^[a-f0-9]{24}$/.test(id) },
     ),
   },
@@ -21,7 +23,9 @@ jest.mock("mongoose", () => ({
 }));
 
 jest.mock("../src/shared/utils/mongose", () => ({
-  withTransaction: jest.fn(async (fn: (s: typeof mockSession) => Promise<unknown>) => fn(mockSession)),
+  withTransaction: jest.fn(async (fn: (s: typeof mockSession) => Promise<unknown>) =>
+    fn(mockSession),
+  ),
 }));
 
 // ─── Mock models ─────────────────────────────────────────────────────────────
@@ -65,11 +69,11 @@ jest.mock("../src/modules/userRoles/repository", () => ({
 
 // ─── Import services after mocks ─────────────────────────────────────────────
 
+import { assignCriticalValue } from "../src/modules/tickets/services/assignCrititalValue";
 import { createTicket } from "../src/modules/tickets/services/createTicket";
+import { escalateTicket } from "../src/modules/tickets/services/escalateTicket";
 import { getTickets } from "../src/modules/tickets/services/getTickets";
 import { updateStatus } from "../src/modules/tickets/services/updateStatus";
-import { escalateTicket } from "../src/modules/tickets/services/escalateTicket";
-import { assignCriticalValue } from "../src/modules/tickets/services/assignCrititalValue";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -217,9 +221,9 @@ describe("updateStatus", () => {
     const ticket = makeTicketDoc({ status: "Completed" });
     mockTicketFindById.mockReturnValue({ session: jest.fn().mockResolvedValue(ticket) });
 
-    await expect(
-      updateStatus(VALID_ID, mockUser, { status: "New", note: "" }),
-    ).rejects.toThrow(/Cannot transition/);
+    await expect(updateStatus(VALID_ID, mockUser, { status: "New", note: "" })).rejects.toThrow(
+      /Cannot transition/,
+    );
   });
 
   it("should update status from New to Attending", async () => {
@@ -233,17 +237,59 @@ describe("updateStatus", () => {
     });
 
     expect(ticket.save).toHaveBeenCalled();
-    expect(ticket.status).toBe("Attending");
-    expect(mockLogCreate).toHaveBeenCalled();
+    expect(result.status).toBe("Attending"); // ticket status updated
+    expect(mockLogCreate).toHaveBeenCalledWith(
+      expect.arrayContaining([
+        expect.objectContaining({
+          note: "Working on it", // note goes to log, not ticket
+          toStatus: "Attending",
+          fromStatus: "New",
+        }),
+      ]),
+      expect.objectContaining({ session: expect.anything() }),
+    );
   });
 
-  it("should update status from New to Completed", async () => {
+  it("should throw when updating New directly to Completed", async () => {
     const ticket = makeTicketDoc({ status: "New" });
+    mockTicketFindById.mockReturnValue({ session: jest.fn().mockResolvedValue(ticket) });
+
+    await expect(
+      updateStatus(VALID_ID, mockUser, { status: "Completed", note: "Done" }),
+    ).rejects.toThrow("New tickets can only be updated to Attending");
+  });
+
+  it("should update status from Attending to Completed", async () => {
+    const ticket = makeTicketDoc({ status: "Attending" });
     mockTicketFindById.mockReturnValue({ session: jest.fn().mockResolvedValue(ticket) });
     mockLogCreate.mockResolvedValue([{}]);
 
-    await updateStatus(VALID_ID, mockUser, { status: "Completed", note: "Done" });
-    expect(ticket.status).toBe("Completed");
+    const result = await updateStatus(VALID_ID, mockUser, {
+      status: "Completed",
+      note: "Done",
+    });
+
+    expect(ticket.save).toHaveBeenCalled();
+    expect(result.status).toBe("Completed");
+    expect(mockLogCreate).toHaveBeenCalledWith(
+      expect.arrayContaining([
+        expect.objectContaining({
+          note: "Done",
+          toStatus: "Completed",
+          fromStatus: "Attending",
+        }),
+      ]),
+      expect.objectContaining({ session: expect.anything() }),
+    );
+  });
+
+  it("should throw when updating a Completed ticket", async () => {
+    const ticket = makeTicketDoc({ status: "Completed" });
+    mockTicketFindById.mockReturnValue({ session: jest.fn().mockResolvedValue(ticket) });
+
+    await expect(
+      updateStatus(VALID_ID, mockUser, { status: "Attending", note: "" }),
+    ).rejects.toThrow(/Cannot transition/);
   });
 });
 
@@ -266,17 +312,17 @@ describe("escalateTicket", () => {
     ).rejects.toThrow("Ticket not found");
   });
 
-  it("should throw if ticket is completed", async () => {
+  it("should throw if ticket is not Attending", async () => {
     const ticket = makeTicketDoc({ status: "Completed" });
     mockTicketFindById.mockReturnValue({ session: jest.fn().mockResolvedValue(ticket) });
 
     await expect(
       escalateTicket(VALID_ID, mockUser, { note: "escalating", assignedTo: l2UserId }),
-    ).rejects.toThrow("already completed");
+    ).rejects.toThrow("Ticket must be set to Attending before performing this action");
   });
 
   it("should throw if ticket is already at L3", async () => {
-    const ticket = makeTicketDoc({ currentLevel: "L3" });
+    const ticket = makeTicketDoc({ currentLevel: "L3", status: "Attending" });
     mockTicketFindById.mockReturnValue({ session: jest.fn().mockResolvedValue(ticket) });
 
     await expect(
@@ -285,7 +331,7 @@ describe("escalateTicket", () => {
   });
 
   it("should throw if L2 ticket has no C1/C2 critical value", async () => {
-    const ticket = makeTicketDoc({ currentLevel: "L2", criticalValue: "C3" });
+    const ticket = makeTicketDoc({ currentLevel: "L2", criticalValue: "C3", status: "Attending" });
     mockTicketFindById.mockReturnValue({ session: jest.fn().mockResolvedValue(ticket) });
 
     await expect(
@@ -294,7 +340,7 @@ describe("escalateTicket", () => {
   });
 
   it("should throw if assignedTo is invalid", async () => {
-    const ticket = makeTicketDoc({ currentLevel: "L1" });
+    const ticket = makeTicketDoc({ currentLevel: "L1", status: "Attending" });
     mockTicketFindById.mockReturnValue({ session: jest.fn().mockResolvedValue(ticket) });
 
     await expect(
@@ -303,21 +349,29 @@ describe("escalateTicket", () => {
   });
 
   it("should escalate L1 to L2 successfully", async () => {
-    const ticket = makeTicketDoc({ currentLevel: "L1" });
+    const ticket = makeTicketDoc({ currentLevel: "L1", status: "Attending" });
     mockTicketFindById.mockReturnValue({ session: jest.fn().mockResolvedValue(ticket) });
     mockUserFindById.mockReturnValue({
       session: jest.fn().mockResolvedValue({ _id: l2UserId, roleId: 200 }),
     });
     mockLogCreate.mockResolvedValue([{}]);
 
-    const result = await escalateTicket(VALID_ID, mockUser, {
+    await escalateTicket(VALID_ID, mockUser, {
       note: "Need L2 help",
       assignedTo: l2UserId,
     });
 
     expect(ticket.currentLevel).toBe("L2");
-    expect(ticket.status).toBe("Attending");
+    expect(ticket.status).toBe("New");
     expect(ticket.save).toHaveBeenCalled();
+    expect(mockLogCreate).toHaveBeenCalledWith(
+      expect.arrayContaining([
+        expect.objectContaining({
+          note: "Need L2 help",
+        }),
+      ]),
+      expect.objectContaining({ session: expect.anything() }),
+    );
   });
 });
 
@@ -338,27 +392,34 @@ describe("assignCriticalValue", () => {
     ).rejects.toThrow("Ticket not found");
   });
 
-  it("should throw if ticket is already completed", async () => {
+  it("should throw if ticket is not Attending", async () => {
     const ticket = makeTicketDoc({ status: "Completed" });
     mockTicketFindById.mockReturnValue({ session: jest.fn().mockResolvedValue(ticket) });
 
     await expect(
       assignCriticalValue(VALID_ID, mockL2User, { criticalValue: "C1", note: "" }),
-    ).rejects.toThrow("already completed");
+    ).rejects.toThrow("Ticket must be set to Attending before performing this action");
   });
 
   it("should assign critical value successfully", async () => {
-    const ticket = makeTicketDoc();
+    const ticket = makeTicketDoc({ status: "Attending" });
     mockTicketFindById.mockReturnValue({ session: jest.fn().mockResolvedValue(ticket) });
     mockLogCreate.mockResolvedValue([{}]);
 
-    const result = await assignCriticalValue(VALID_ID, mockL2User, {
+    await assignCriticalValue(VALID_ID, mockL2User, {
       criticalValue: "C1",
       note: "System down",
     });
 
     expect(ticket.criticalValue).toBe("C1");
     expect(ticket.save).toHaveBeenCalled();
-    expect(mockLogCreate).toHaveBeenCalled();
+    expect(mockLogCreate).toHaveBeenCalledWith(
+      expect.arrayContaining([
+        expect.objectContaining({
+          note: "System down",
+        }),
+      ]),
+      expect.objectContaining({ session: expect.anything() }),
+    );
   });
 });

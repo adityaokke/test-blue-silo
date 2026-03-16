@@ -8,8 +8,6 @@ export default function SignupPage() {
   const user = useAuthStore((state) => state.user);
   const setAuth = useAuthStore((state) => state.setAuth);
 
-  if (user) return <Navigate to="/tickets" replace />;
-
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -19,9 +17,9 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  if (user) return <Navigate to="/tickets" replace />;
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
@@ -44,20 +42,14 @@ export default function SignupPage() {
   return (
     <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
-
         {/* Header */}
         <div className="mb-8 text-center">
-          <h1 className="text-xl font-bold text-white tracking-tight">
-            Create Account
-          </h1>
-          <p className="text-slate-500 text-xs mt-1 tracking-widest uppercase">
-            Helpdesk Portal
-          </p>
+          <h1 className="text-xl font-bold text-white tracking-tight">Create Account</h1>
+          <p className="text-slate-500 text-xs mt-1 tracking-widest uppercase">Helpdesk Portal</p>
         </div>
 
         {/* Card */}
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-8">
-
           {error && (
             <div className="mb-5 px-4 py-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
               {error}
@@ -65,7 +57,6 @@ export default function SignupPage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
-
             {/* Name */}
             <div>
               <label className="block text-xs font-medium text-slate-400 mb-2 tracking-widest uppercase">
@@ -139,7 +130,6 @@ export default function SignupPage() {
             >
               {loading ? "Creating account..." : "Create Account"}
             </button>
-
           </form>
         </div>
 
@@ -153,7 +143,6 @@ export default function SignupPage() {
             Sign in
           </button>
         </p>
-
       </div>
     </div>
   );

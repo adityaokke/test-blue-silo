@@ -36,7 +36,7 @@ export const signup = async (name: string, email: string, password: string, role
   const userRole = await USER_ROLES.find((r) => r.level === role);
   if (!userRole) throw new ApiError(400, "Invalid role specified");
 
-  // Create user — password hashing handled by Mongoose pre-save hook
+  // Create user - password hashing handled by Mongoose pre-save hook
   const user = await User.create({ name, email, password, roleId: userRole.id });
 
   const payload: IAuthUser = {

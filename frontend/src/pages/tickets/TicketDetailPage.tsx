@@ -2,14 +2,11 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import type { ITicket, ITicketLog } from "../../types/ticket";
 import { ticketService } from "../../services/ticket";
-import {
-  CRITICAL_STYLE,
-  PRIORITY_STYLE,
-  STATUS_STYLE,
-} from "../../utils/ticketStyles";
+import { CRITICAL_STYLE, PRIORITY_STYLE, STATUS_STYLE } from "../../utils/ticketStyles";
 import { useAuthStore } from "../../store/auth";
 import TicketDetailSkeleton from "./TicketDetailSkeleton";
 import PageError from "../../components/ui/PageError";
+import { ENV } from "../../config/env";
 
 const formatDate = (iso: string) =>
   new Date(iso).toLocaleDateString("en-GB", {
@@ -42,7 +39,7 @@ export default function TicketDetailPage() {
       const [ticketRes, logsRes] = await Promise.all([
         ticketService.getById(ticketId),
         ticketService.getLogs(ticketId),
-        new Promise((resolve) => setTimeout(resolve, 500)),
+        new Promise((resolve) => setTimeout(resolve, ENV.MIN_LOADING_TIMEOUT)),
       ]);
       setTicket(ticketRes.data);
       setLogs(logsRes.data);
@@ -55,9 +52,7 @@ export default function TicketDetailPage() {
 
   const handleUpdate = () => {
     if (!user || !ticket) return;
-    navigate(
-      `/tickets/${ticket.id}/update/${ticket.currentLevel.toLowerCase()}`,
-    );
+    navigate(`/tickets/${ticket.id}/update/${ticket.currentLevel.toLowerCase()}`);
   };
 
   if (loading) return <TicketDetailSkeleton />;
@@ -74,7 +69,7 @@ export default function TicketDetailPage() {
           onClick={() => navigate("/tickets")}
           className="text-slate-500 hover:text-slate-300 transition-colors text-sm"
         >
-          ← Back
+          Back
         </button>
         {user &&
           ticket &&
@@ -100,32 +95,22 @@ export default function TicketDetailPage() {
           {/* Title + Status */}
           <div className="flex items-start justify-between gap-4 mb-4">
             <h1 className="text-lg font-bold text-white">{ticket.title}</h1>
-            <span
-              className={`px-2 py-0.5 rounded text-xs shrink-0 ${STATUS_STYLE[ticket.status]}`}
-            >
+            <span className={`px-2 py-0.5 rounded text-xs shrink-0 ${STATUS_STYLE[ticket.status]}`}>
               {ticket.status}
             </span>
           </div>
 
           {/* Description */}
-          <p className="text-slate-400 text-sm leading-relaxed mb-6">
-            {ticket.description}
-          </p>
+          <p className="text-slate-400 text-sm leading-relaxed mb-6">{ticket.description}</p>
 
           {/* Meta grid */}
           <div className="grid grid-cols-2 gap-4 text-sm md:grid-cols-4 mb-6">
             <div>
-              <p className="text-xs text-slate-500 uppercase tracking-widest mb-1">
-                Priority
-              </p>
-              <p className={`font-medium ${PRIORITY_STYLE[ticket.priority]}`}>
-                {ticket.priority}
-              </p>
+              <p className="text-xs text-slate-500 uppercase tracking-widest mb-1">Priority</p>
+              <p className={`font-medium ${PRIORITY_STYLE[ticket.priority]}`}>{ticket.priority}</p>
             </div>
             <div>
-              <p className="text-xs text-slate-500 uppercase tracking-widest mb-1">
-                Critical
-              </p>
+              <p className="text-xs text-slate-500 uppercase tracking-widest mb-1">Critical</p>
               {ticket.criticalValue ? (
                 <span
                   className={`px-2 py-0.5 rounded text-xs ${CRITICAL_STYLE[ticket.criticalValue]}`}
@@ -133,37 +118,25 @@ export default function TicketDetailPage() {
                   {ticket.criticalValue}
                 </span>
               ) : (
-                <p className="text-slate-600">—</p>
+                <p className="text-slate-600">-</p>
               )}
             </div>
             <div>
-              <p className="text-xs text-slate-500 uppercase tracking-widest mb-1">
-                Category
-              </p>
+              <p className="text-xs text-slate-500 uppercase tracking-widest mb-1">Category</p>
               <p className="text-slate-200">{ticket.category}</p>
             </div>
             <div>
-              <p className="text-xs text-slate-500 uppercase tracking-widest mb-1">
-                Created
-              </p>
+              <p className="text-xs text-slate-500 uppercase tracking-widest mb-1">Created</p>
               <p className="text-slate-400">{formatDate(ticket.createdAt)}</p>
             </div>
             <div>
-              <p className="text-xs text-slate-500 uppercase tracking-widest mb-1">
-                Expected
-              </p>
-              <p className="text-slate-400">
-                {formatDate(ticket.expectedCompletionAt)}
-              </p>
+              <p className="text-xs text-slate-500 uppercase tracking-widest mb-1">Expected</p>
+              <p className="text-slate-400">{formatDate(ticket.expectedCompletionAt)}</p>
             </div>
             {ticket.completedAt && (
               <div>
-                <p className="text-xs text-slate-500 uppercase tracking-widest mb-1">
-                  Completed
-                </p>
-                <p className="text-emerald-400">
-                  {formatDate(ticket.completedAt)}
-                </p>
+                <p className="text-xs text-slate-500 uppercase tracking-widest mb-1">Completed</p>
+                <p className="text-emerald-400">{formatDate(ticket.completedAt)}</p>
               </div>
             )}
           </div>
@@ -174,37 +147,27 @@ export default function TicketDetailPage() {
           {/* Level & Assignment */}
           <div className="grid grid-cols-2 gap-4 text-sm md:grid-cols-3">
             <div>
-              <p className="text-xs text-slate-500 uppercase tracking-widest mb-1">
-                Current Level
-              </p>
+              <p className="text-xs text-slate-500 uppercase tracking-widest mb-1">Current Level</p>
               <span className="bg-slate-800 text-slate-300 px-2 py-0.5 rounded text-xs font-mono">
                 {ticket.currentLevel}
               </span>
             </div>
             <div>
-              <p className="text-xs text-slate-500 uppercase tracking-widest mb-1">
-                Assigned To
-              </p>
+              <p className="text-xs text-slate-500 uppercase tracking-widest mb-1">Assigned To</p>
               {ticket.assignedTo ? (
                 <div>
                   <p className="text-slate-200">{ticket.assignedTo.name}</p>
-                  <p className="text-xs text-slate-500">
-                    {ticket.assignedTo.role.name}
-                  </p>
+                  <p className="text-xs text-slate-500">{ticket.assignedTo.role.name}</p>
                 </div>
               ) : (
                 <p className="text-slate-600">Unassigned</p>
               )}
             </div>
             <div>
-              <p className="text-xs text-slate-500 uppercase tracking-widest mb-1">
-                Created By
-              </p>
+              <p className="text-xs text-slate-500 uppercase tracking-widest mb-1">Created By</p>
               <div>
                 <p className="text-slate-200">{ticket.createdBy.name}</p>
-                <p className="text-xs text-slate-500">
-                  {ticket.createdBy.role.name}
-                </p>
+                <p className="text-xs text-slate-500">{ticket.createdBy.role.name}</p>
               </div>
             </div>
           </div>
@@ -212,9 +175,7 @@ export default function TicketDetailPage() {
 
         {/* Ticket Logs */}
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
-          <h2 className="text-sm font-semibold text-white mb-4">
-            Activity Log
-          </h2>
+          <h2 className="text-sm font-semibold text-white mb-4">Activity Log</h2>
 
           {logs.length === 0 ? (
             <p className="text-slate-600 text-sm">No activity yet.</p>
@@ -236,29 +197,20 @@ export default function TicketDetailPage() {
                         {log.action.replace(/_/g, " ")}
                       </span>
                       <span className="text-slate-700">·</span>
-                      <span className="text-xs text-slate-500">
-                        {log.performedBy?.name}
-                      </span>
+                      <span className="text-xs text-slate-500">{log.performedBy?.name}</span>
                       <span className="text-slate-700">·</span>
-                      <span className="text-xs text-slate-500">
-                        {log.performedBy?.role?.name}
-                      </span>
+                      <span className="text-xs text-slate-500">{log.performedBy?.role?.name}</span>
                       <span className="text-slate-700">·</span>
-                      <span className="text-xs text-slate-600">
-                        {formatDate(log.createdAt)}
-                      </span>
+                      <span className="text-xs text-slate-600">{formatDate(log.createdAt)}</span>
                     </div>
 
                     {/* Note */}
-                    {log.note && (
-                      <p className="text-sm text-slate-400 mb-1">{log.note}</p>
-                    )}
+                    {log.note && <p className="text-sm text-slate-400 mb-1">{log.note}</p>}
 
                     {/* Status change */}
                     {log.fromStatus && log.toStatus && (
                       <p className="text-xs text-slate-500">
-                        Status:{" "}
-                        <span className="text-slate-400">{log.fromStatus}</span>
+                        Status: <span className="text-slate-400">{log.fromStatus}</span>
                         {" → "}
                         <span className="text-slate-400">{log.toStatus}</span>
                       </p>
@@ -267,8 +219,7 @@ export default function TicketDetailPage() {
                     {/* Level change */}
                     {log.fromLevel && log.toLevel && (
                       <p className="text-xs text-slate-500">
-                        Level:{" "}
-                        <span className="text-slate-400">{log.fromLevel}</span>
+                        Level: <span className="text-slate-400">{log.fromLevel}</span>
                         {" → "}
                         <span className="text-slate-400">{log.toLevel}</span>
                       </p>
@@ -277,10 +228,7 @@ export default function TicketDetailPage() {
                     {/* Critical value */}
                     {log.criticalValue && (
                       <p className="text-xs text-slate-500">
-                        Critical Value:{" "}
-                        <span className="text-slate-400">
-                          {log.criticalValue}
-                        </span>
+                        Critical Value: <span className="text-slate-400">{log.criticalValue}</span>
                       </p>
                     )}
                   </div>

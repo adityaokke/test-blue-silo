@@ -11,7 +11,6 @@ export default function UpdateTicketSkeleton() {
       </header>
 
       <main className="max-w-xl mx-auto px-6 py-8 space-y-5">
-
         {/* Ticket summary skeleton */}
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-2">
           <div className="h-3 w-16 bg-slate-800 rounded animate-pulse" />
@@ -31,7 +30,6 @@ export default function UpdateTicketSkeleton() {
             <div className="h-10 w-full bg-slate-800 rounded-lg animate-pulse" />
           </div>
         ))}
-
       </main>
     </div>
   );

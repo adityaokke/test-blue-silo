@@ -35,6 +35,14 @@ export const updateStatus = async (
       throw new ApiError(400, "Ticket is already completed and cannot be updated");
     }
 
+    // only allow valid next statuses based on current status
+    if (ticket.status === "New" && payload.status !== "Attending") {
+      throw new ApiError(400, "New tickets can only be updated to Attending");
+    }
+    if (ticket.status === "Attending" && payload.status !== "Completed") {
+      throw new ApiError(400, "Attending tickets can only be updated to Completed");
+    }
+
     const fromStatus = ticket.status;
     ticket.status = payload.status as TicketStatus;
     await ticket.save({ session });

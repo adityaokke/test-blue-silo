@@ -7,6 +7,7 @@ import UpdateTicketStatusForm from "./UpdateTicketStatusForm";
 import UpdateTicketSummaryCard from "./UpdateTicketSummaryCard";
 import UpdateTopbar from "./UpdateTicketTopbar";
 import PageError from "../../components/ui/PageError";
+import { ENV } from "../../config/env";
 
 export default function UpdateTicketL3Page() {
   const { id } = useParams();
@@ -24,7 +25,7 @@ export default function UpdateTicketL3Page() {
     try {
       const [res] = await Promise.all([
         await ticketService.getById(ticketId),
-        new Promise((resolve) => setTimeout(resolve, 500)),
+        new Promise((resolve) => setTimeout(resolve, ENV.MIN_LOADING_TIMEOUT)),
       ]);
       setTicket(res.data);
     } catch {

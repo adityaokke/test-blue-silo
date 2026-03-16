@@ -74,17 +74,15 @@ TicketSchema.index({ currentLevel: 1, criticalValue: 1 }); // L3 queue
 
 TicketSchema.set("toJSON", {
   transform: (_doc, ret) => {
-    ret.id = ret._id.toString();
-    (ret as any)._id = undefined;
-    return ret;
+    const { _id, ...rest } = ret;
+    return { ...rest, id: _id.toString() };
   },
 });
 
 TicketSchema.set("toObject", {
   transform: (_doc, ret) => {
-    ret.id = ret._id.toString();
-    (ret as any)._id = undefined;
-    return ret;
+    const { _id, ...rest } = ret;
+    return { ...rest, id: _id.toString() };
   },
 });
 

@@ -3,7 +3,7 @@ import { Model, Schema, model } from "mongoose";
 import { IUser, IUserMethods } from "./type";
 
 // Combine document interface + methods
-type UserModel = Model<IUser, {}, IUserMethods>;
+type UserModel = Model<IUser, object, IUserMethods>;
 
 const UserSchema = new Schema<IUser, UserModel, IUserMethods>(
   {
@@ -40,7 +40,7 @@ const UserSchema = new Schema<IUser, UserModel, IUserMethods>(
 
 // ─── Hash password before save ────────────────────────────────────────────────
 
-UserSchema.pre("save", async function (next) {
+UserSchema.pre("save", async function () {
   if (!this.isModified("password")) return;
   this.password = await bcrypt.hash(this.password, 10);
 });
@@ -55,19 +55,15 @@ UserSchema.methods.comparePassword = async function (plainText: string): Promise
 
 UserSchema.set("toJSON", {
   transform: (_doc, ret) => {
-    ret.password = "<hidden>";
-    ret.id = ret._id.toString();
-    (ret as any)._id = undefined;
-    return ret;
+    const { _id, ...rest } = ret;
+    return { ...rest, password: "<hidden>", id: _id.toString() };
   },
 });
 
 UserSchema.set("toObject", {
   transform: (_doc, ret) => {
-    ret.password = "<hidden>";
-    ret.id = ret._id.toString();
-    (ret as any)._id = undefined;
-    return ret;
+    const { _id, ...rest } = ret;
+    return { ...rest, password: "<hidden>", id: _id.toString() };
   },
 });
 

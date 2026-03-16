@@ -34,9 +34,7 @@ export default function LoginPage() {
       <div className="relative">
         {/* Header */}
         <div className="mb-8 text-center">
-          <h1 className="text-xl font-bold text-white tracking-tight">
-            Helpdesk Portal
-          </h1>
+          <h1 className="text-xl font-bold text-white tracking-tight">Helpdesk Portal</h1>
           <p className="text-slate-500 text-xs mt-1 tracking-widest uppercase">
             Ticket Maintenance System
           </p>

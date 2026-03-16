@@ -10,6 +10,7 @@ import UpdateTicketStatusForm from "./UpdateTicketStatusForm";
 import UpdateTicketSummaryCard from "./UpdateTicketSummaryCard";
 import UpdateTopbar from "./UpdateTicketTopbar";
 import PageError from "../../components/ui/PageError";
+import { ENV } from "../../config/env";
 
 export default function UpdateStatusPage() {
   const { id } = useParams();
@@ -29,7 +30,7 @@ export default function UpdateStatusPage() {
       const [ticketRes, usersRes] = await Promise.all([
         ticketService.getById(ticketId),
         userService.getByLevel("L2"),
-        new Promise((resolve) => setTimeout(resolve, 500)),
+        new Promise((resolve) => setTimeout(resolve, ENV.MIN_LOADING_TIMEOUT)),
       ]);
       setTicket(ticketRes.data);
       setL2Users(usersRes.data);
@@ -59,11 +60,9 @@ export default function UpdateStatusPage() {
 
         <UpdateTicketStatusForm ticketId={ticket.id} initialStatus={ticket.status} />
 
-        <UpdateTicketEscalateForm
-          ticketId={ticket.id}
-          toLevel="L2"
-          users={l2Users}
-        />
+        {ticket.status === "Attending" && (
+          <UpdateTicketEscalateForm ticketId={ticket.id} toLevel="L2" users={l2Users} />
+        )}
       </main>
     </div>
   );

@@ -4,9 +4,9 @@ import type { CriticalValue } from "../../types/ticket";
 import { ticketService } from "../../services/ticket";
 
 const CRITICAL_VALUES = [
-  { code: "C1", label: "C1 — System Down" },
-  { code: "C2", label: "C2 — Partial Issue" },
-  { code: "C3", label: "C3 — Minor Problem" },
+  { code: "C1", label: "C1 - System Down" },
+  { code: "C2", label: "C2 - Partial Issue" },
+  { code: "C3", label: "C3 - Minor Problem" },
 ] as const;
 
 interface Props {
@@ -17,9 +17,7 @@ interface Props {
 export default function UpdateTicketAssignCriticalForm({ ticketId, initialValue }: Props) {
   const navigate = useNavigate();
 
-  const [criticalValue, setCriticalValue] = useState<CriticalValue | "">(
-    initialValue ?? ""
-  );
+  const [criticalValue, setCriticalValue] = useState<CriticalValue | "">(initialValue ?? "");
   const [note, setNote] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -63,7 +61,9 @@ export default function UpdateTicketAssignCriticalForm({ ticketId, initialValue 
           onChange={(e) => setCriticalValue(e.target.value as CriticalValue)}
           className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-sky-500 transition-colors"
         >
-          <option value="" disabled>Select...</option>
+          <option value="" disabled>
+            Select...
+          </option>
           {CRITICAL_VALUES.map((c) => (
             <option key={c.code} value={c.code}>
               {c.label}
@@ -75,8 +75,7 @@ export default function UpdateTicketAssignCriticalForm({ ticketId, initialValue 
       {/* Note */}
       <div>
         <label className="block text-xs text-slate-500 mb-2 uppercase tracking-widest">
-          Note{" "}
-          <span className="text-slate-600 normal-case">(optional)</span>
+          Note <span className="text-slate-600 normal-case">(optional)</span>
         </label>
         <textarea
           value={note}

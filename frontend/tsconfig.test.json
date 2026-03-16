@@ -12,5 +12,5 @@
     "skipLibCheck": true,
     "noEmit": true
   },
-  "include": ["__tests__", "src", "setupPolyfills.ts", "setupTests.ts"]
+  "include": ["__tests__", "src"]
 }

@@ -1,5 +1,3 @@
-import { ApiError } from "../src/shared/utils/error";
-
 // ─── Mocks ───────────────────────────────────────────────────────────────────
 
 const mockFindOne = jest.fn();

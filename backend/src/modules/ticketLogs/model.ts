@@ -27,7 +27,7 @@ const TicketLogSchema = new Schema<ITicketLog>(
       required: true,
     },
 
-    // Change tracking — all optional
+    // Change tracking - all optional
     fromStatus: { type: String, enum: STATUSES },
     toStatus: { type: String, enum: STATUSES },
     fromLevel: { type: String, enum: LEVELS },
@@ -42,9 +42,8 @@ const TicketLogSchema = new Schema<ITicketLog>(
 
 TicketLogSchema.set("toJSON", {
   transform: (_doc, ret) => {
-    ret.id = ret._id.toString();
-    (ret as any)._id = undefined;
-    return ret;
+    const { _id, ...rest } = ret;
+    return { ...rest, id: _id.toString() };
   },
 });
 

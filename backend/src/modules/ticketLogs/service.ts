@@ -15,7 +15,7 @@ export const getLogsByTicketId = async (ticketId: string) => {
 
   const items = await TicketLog.find({ ticketId })
     .populate<{ performedBy: IUser }>("performedBy", "name email roleId")
-    .sort({ createdAt: 1 }); // oldest first — chronological order
+    .sort({ createdAt: 1 }); // oldest first - chronological order
 
   const result = items.map((item) => {
     const obj = item.toObject();

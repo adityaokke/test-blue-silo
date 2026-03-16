@@ -1,9 +1,11 @@
 import type { Config } from "jest";
+const testRoot = "<rootDir>/__tests__";
+const testSetups = `${testRoot}/setup`;
 
 const config: Config = {
   preset: "ts-jest",
   testEnvironment: "jsdom",
-  roots: ["<rootDir>/__tests__"],
+  roots: [testRoot],
   testMatch: ["**/*.test.{ts,tsx}"],
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json"],
   moduleNameMapper: {
@@ -25,8 +27,8 @@ const config: Config = {
       },
     ],
   },
-  setupFiles: ["<rootDir>/src/setupPolyfills.ts"],
-  setupFilesAfterEnv: ["<rootDir>/src/setupTests.ts"],
+  setupFiles: [`${testSetups}/setupPolyfills.ts`, `${testSetups}/setup.ts`],
+  setupFilesAfterEnv: [`${testSetups}/setupTests.ts`],
 };
 
 export default config;

@@ -11,7 +11,7 @@ import UpdateTicketStatusForm from "./UpdateTicketStatusForm";
 import UpdateTicketSummaryCard from "./UpdateTicketSummaryCard";
 import UpdateTopbar from "./UpdateTicketTopbar";
 import PageError from "../../components/ui/PageError";
-
+import { ENV } from "../../config/env";
 
 export default function UpdateTicketL2Page() {
   const { id } = useParams();
@@ -31,7 +31,7 @@ export default function UpdateTicketL2Page() {
       const [ticketRes, usersRes] = await Promise.all([
         ticketService.getById(ticketId),
         userService.getByLevel("L3"),
-        new Promise((resolve) => setTimeout(resolve, 500)),
+        new Promise((resolve) => setTimeout(resolve, ENV.MIN_LOADING_TIMEOUT)),
       ]);
       setTicket(ticketRes.data);
       setL3Users(usersRes.data);
@@ -60,17 +60,16 @@ export default function UpdateTicketL2Page() {
         <UpdateTicketSummaryCard ticket={ticket} />
 
         <UpdateTicketStatusForm ticketId={ticket.id} initialStatus={ticket.status} />
+        {ticket.status === "Attending" && (
+          <>
+            <UpdateTicketAssignCriticalForm
+              ticketId={ticket.id}
+              initialValue={ticket.criticalValue}
+            />
 
-        <UpdateTicketAssignCriticalForm
-          ticketId={ticket.id}
-          initialValue={ticket.criticalValue}
-        />
-
-        <UpdateTicketEscalateForm
-          ticketId={ticket.id}
-          toLevel="L3"
-          users={l3Users}
-        />
+            <UpdateTicketEscalateForm ticketId={ticket.id} toLevel="L3" users={l3Users} />
+          </>
+        )}
       </main>
     </div>
   );

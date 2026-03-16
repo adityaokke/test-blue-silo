@@ -7,6 +7,7 @@ import { withTransaction } from "../../../shared/utils/mongose";
 import { IAuthUser } from "../../users/type";
 import { User } from "../../users/model";
 import * as userRoleRepository from "../../userRoles/repository";
+import { requireAttending } from "../utils";
 
 export const escalateTicket = async (
   id: string,
@@ -18,6 +19,8 @@ export const escalateTicket = async (
   return withTransaction(async (session) => {
     const ticket = await Ticket.findById(id).session(session);
     if (!ticket) throw new ApiError(404, "Ticket not found");
+
+    requireAttending(ticket);
 
     if (ticket.status === "Completed") {
       throw new ApiError(400, "Ticket is already completed and cannot be updated");
@@ -35,7 +38,7 @@ export const escalateTicket = async (
     const toLevel = fromLevel === "L1" ? "L2" : "L3";
 
     ticket.currentLevel = toLevel;
-    ticket.status = "Attending";
+    ticket.status = "New"; // reset to New
 
     if (!(payload.assignedTo && Types.ObjectId.isValid(payload.assignedTo))) {
       throw new ApiError(400, "Valid assignedTo user ID is required for escalation");

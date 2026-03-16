@@ -18,7 +18,7 @@ export const useAuthStore = create<AuthStore>()(
       logout: () => set({ user: null, token: null }),
     }),
     {
-      name: "auth",   // persists to localStorage
-    }
-  )
+      name: "auth", // persists to localStorage
+    },
+  ),
 );

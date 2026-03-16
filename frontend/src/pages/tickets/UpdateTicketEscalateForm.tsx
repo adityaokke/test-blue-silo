@@ -35,7 +35,6 @@ export default function UpdateTicketEscalateForm({ ticketId, toLevel, users }: P
 
   return (
     <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
-
       {/* Header */}
       <div className="flex items-center justify-between">
         <p className="text-xs text-slate-400 uppercase tracking-widest font-medium">

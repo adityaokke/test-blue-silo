@@ -2,16 +2,16 @@ import type {
   CATEGORIES,
   CRITICAL_VALUES,
   LEVELS,
-  PRIORITIES, STATUSES
+  PRIORITIES,
+  STATUSES,
 } from "../constants/ticket";
 import type { IUserRole } from "./userRole";
 
-
-export type Priority = typeof PRIORITIES[number];
-export type Category = typeof CATEGORIES[number]["code"];
-export type Status =  typeof STATUSES[number];
-export type Level = typeof LEVELS[number];
-export type CriticalValue = typeof CRITICAL_VALUES[number];
+export type Priority = (typeof PRIORITIES)[number];
+export type Category = (typeof CATEGORIES)[number]["code"];
+export type Status = (typeof STATUSES)[number];
+export type Level = (typeof LEVELS)[number];
+export type CriticalValue = (typeof CRITICAL_VALUES)[number];
 
 export interface ITicket {
   id: string;

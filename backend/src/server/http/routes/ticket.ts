@@ -4,7 +4,7 @@ import * as ticketController from "../../../modules/tickets/controller";
 
 const router = Router();
 
-// L1 — create ticket
+// L1 - create ticket
 router.post("/", authenticate, requireLevel("L1"), ticketController.createTicket);
 
 router.get("/", authenticate, ticketController.getTickets);
@@ -19,7 +19,7 @@ router.patch(
   ticketController.updateStatus,
 );
 
-// L1 or L2 — escalate
+// L1 or L2 - escalate
 router.patch(
   "/:id/escalate",
   authenticate,
@@ -27,7 +27,7 @@ router.patch(
   ticketController.escalateTicket,
 );
 
-// L2 — assign critical value
+// L2 - assign critical value
 router.patch(
   "/:id/critical-value",
   authenticate,
