@@ -91,9 +91,7 @@ Create accounts via the **Sign Up** page and select a role during registration.
 | Escalate to L2          | ✅ | ❌ | ❌ |
 | Assign critical value   | ❌ | ✅ | ❌ |
 | Escalate to L3          | ❌ | ✅ | ❌ |
-| Mark as completed       | ❌ | ❌ | ✅ |
-| View all tickets        | ❌ | ✅ | ✅ |
-| View own tickets only   | ✅ | ❌ | ❌ |
+| View all tickets        | ✅ | ✅ | ✅ |
 
 ---
 
@@ -170,7 +168,7 @@ erDiagram
         ObjectId ticketId FK
         string action
         ObjectId performedBy FK
-        string performedByLevel
+        string performedByRoleLevel
         string fromStatus
         string toStatus
         string fromLevel
@@ -200,7 +198,6 @@ erDiagram
 └── frontend/
     └── src/
         ├── pages/          # auth, tickets (list, detail, create, update L1/L2/L3)
-        ├── features/       # ticket update components (forms, topbar, summary)
         ├── components/     # ui (skeleton, error), layout (protected route)
         ├── services/       # API clients (auth, ticket, user)
         ├── store/          # Zustand auth store

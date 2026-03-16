@@ -8,7 +8,7 @@ import { Types } from "mongoose";
 import { TicketStatus } from "../type";
 
 const VALID_TRANSITIONS: Record<TicketStatus, TicketStatus[]> = {
-  New: ["Attending", "Completed"],
+  New: ["Attending"],
   Attending: ["Completed"],
   Completed: [],
 };
@@ -31,20 +31,16 @@ export const updateStatus = async (
       );
     }
 
-    if (ticket.status === "Completed") {
-      throw new ApiError(400, "Ticket is already completed and cannot be updated");
+    if (payload.status === "Completed" && !payload.note.trim()) {
+      throw new ApiError(400, "Note is required when completing a ticket");
     }
 
-    // only allow valid next statuses based on current status
-    if (ticket.status === "New" && payload.status !== "Attending") {
-      throw new ApiError(400, "New tickets can only be updated to Attending");
-    }
-    if (ticket.status === "Attending" && payload.status !== "Completed") {
-      throw new ApiError(400, "Attending tickets can only be updated to Completed");
+    if (payload.status === "Completed") {
+      ticket.completedAt = new Date();
     }
 
     const fromStatus = ticket.status;
-    ticket.status = payload.status as TicketStatus;
+    ticket.status = payload.status;
     await ticket.save({ session });
 
     await TicketLog.create(

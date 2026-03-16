@@ -12,7 +12,13 @@ interface Props {
 export default function UpdateTicketStatusForm({ ticketId, initialStatus }: Props) {
   const navigate = useNavigate();
 
-  const [status, setStatus] = useState<Status>(initialStatus);
+  const availableStatuses = STATUSES.filter((s) => {
+    if (initialStatus === "New") return s === "Attending";
+    if (initialStatus === "Attending") return s === "Completed";
+    return false;
+  });
+
+  const [status, setStatus] = useState<Status>(availableStatuses[0]);
   const [note, setNote] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -49,12 +55,7 @@ export default function UpdateTicketStatusForm({ ticketId, initialStatus }: Prop
           onChange={(e) => setStatus(e.target.value as Status)}
           className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-sky-500 transition-colors"
         >
-          {STATUSES.filter((s) => {
-            // only allow valid next statuses based on current status
-            if (initialStatus === "New") return s === "Attending";
-            if (initialStatus === "Attending") return s === "Completed";
-            return false;
-          }).map((s) => (
+          {availableStatuses.map((s) => (
             <option key={s} value={s}>
               {s}
             </option>
@@ -64,12 +65,21 @@ export default function UpdateTicketStatusForm({ ticketId, initialStatus }: Prop
 
       <div>
         <label className="block text-xs text-slate-500 mb-2 uppercase tracking-widest">
-          Note <span className="text-slate-600 normal-case">(optional)</span>
+          Note{" "}
+          {status === "Completed" ? (
+            <span className="text-red-500">*</span>
+          ) : (
+            <span className="text-slate-600 normal-case">(optional)</span>
+          )}
         </label>
         <textarea
           value={note}
           onChange={(e) => setNote(e.target.value)}
-          placeholder="Add a note about this status change..."
+          placeholder={
+            status === "Completed"
+              ? "Describe what was done to complete this ticket..."
+              : "Add a note about this status change..."
+          }
           rows={3}
           className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-sky-500 transition-colors resize-none"
         />
@@ -77,7 +87,7 @@ export default function UpdateTicketStatusForm({ ticketId, initialStatus }: Prop
 
       <button
         onClick={handleSubmit}
-        disabled={submitting}
+        disabled={submitting || (status === "Completed" && !note.trim())}
         className="w-full bg-sky-500 hover:bg-sky-400 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold py-2.5 rounded-lg transition-colors"
       >
         {submitting ? "Updating..." : "Update Status"}

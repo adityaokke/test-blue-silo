@@ -20,14 +20,22 @@ export const escalateTicket = async (
     const ticket = await Ticket.findById(id).session(session);
     if (!ticket) throw new ApiError(404, "Ticket not found");
 
-    requireAttending(ticket);
-
     if (ticket.status === "Completed") {
       throw new ApiError(400, "Ticket is already completed and cannot be updated");
     }
 
+    requireAttending(ticket);
+
     if (ticket.currentLevel === "L3") {
       throw new ApiError(400, "Ticket is already at L3, cannot escalate further");
+    }
+
+    if (ticket.currentLevel !== user.role.level) {
+      throw new ApiError(400, `Only ${ticket.currentLevel} can escalate this ticket`);
+    }
+
+    if (ticket.currentLevel === "L2" && !ticket.criticalValue) {
+      throw new ApiError(400, "Critical value must be assigned before escalating to L3");
     }
 
     if (ticket.currentLevel === "L2" && !["C1", "C2"].includes(ticket.criticalValue ?? "")) {

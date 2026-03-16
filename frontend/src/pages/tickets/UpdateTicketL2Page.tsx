@@ -60,16 +60,18 @@ export default function UpdateTicketL2Page() {
         <UpdateTicketSummaryCard ticket={ticket} />
 
         <UpdateTicketStatusForm ticketId={ticket.id} initialStatus={ticket.status} />
-        {ticket.status === "Attending" && (
-          <>
-            <UpdateTicketAssignCriticalForm
-              ticketId={ticket.id}
-              initialValue={ticket.criticalValue}
-            />
 
-            <UpdateTicketEscalateForm ticketId={ticket.id} toLevel="L3" users={l3Users} />
-          </>
+        {ticket.status === "Attending" && (
+          <UpdateTicketAssignCriticalForm
+            ticketId={ticket.id}
+            initialValue={ticket.criticalValue}
+          />
         )}
+
+        {ticket.status === "Attending" &&
+          (ticket.criticalValue === "C1" || ticket.criticalValue === "C2") && (
+            <UpdateTicketEscalateForm ticketId={ticket.id} toLevel="L3" users={l3Users} />
+          )}
       </main>
     </div>
   );

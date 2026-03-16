@@ -256,7 +256,7 @@ describe("updateStatus", () => {
 
     await expect(
       updateStatus(VALID_ID, mockUser, { status: "Completed", note: "Done" }),
-    ).rejects.toThrow("New tickets can only be updated to Attending");
+    ).rejects.toThrow(/Cannot transition/);
   });
 
   it("should update status from Attending to Completed", async () => {
@@ -281,6 +281,15 @@ describe("updateStatus", () => {
       ]),
       expect.objectContaining({ session: expect.anything() }),
     );
+  });
+
+  it("should throw when completing with empty note", async () => {
+    const ticket = makeTicketDoc({ status: "Attending" });
+    mockTicketFindById.mockReturnValue({ session: jest.fn().mockResolvedValue(ticket) });
+
+    await expect(
+      updateStatus(VALID_ID, mockUser, { status: "Completed", note: "   " }),
+    ).rejects.toThrow("Note is required when completing a ticket");
   });
 
   it("should throw when updating a Completed ticket", async () => {
@@ -312,13 +321,31 @@ describe("escalateTicket", () => {
     ).rejects.toThrow("Ticket not found");
   });
 
-  it("should throw if ticket is not Attending", async () => {
+  it("should throw if ticket is completed", async () => {
     const ticket = makeTicketDoc({ status: "Completed" });
     mockTicketFindById.mockReturnValue({ session: jest.fn().mockResolvedValue(ticket) });
 
     await expect(
       escalateTicket(VALID_ID, mockUser, { note: "escalating", assignedTo: l2UserId }),
+    ).rejects.toThrow("already completed");
+  });
+
+  it("should throw if ticket is not Attending", async () => {
+    const ticket = makeTicketDoc({ status: "New" });
+    mockTicketFindById.mockReturnValue({ session: jest.fn().mockResolvedValue(ticket) });
+
+    await expect(
+      escalateTicket(VALID_ID, mockUser, { note: "escalating", assignedTo: l2UserId }),
     ).rejects.toThrow("Ticket must be set to Attending before performing this action");
+  });
+
+  it("should throw if user role level does not match ticket level", async () => {
+    const ticket = makeTicketDoc({ currentLevel: "L2", status: "Attending" });
+    mockTicketFindById.mockReturnValue({ session: jest.fn().mockResolvedValue(ticket) });
+
+    await expect(
+      escalateTicket(VALID_ID, mockUser, { note: "escalating", assignedTo: l2UserId }),
+    ).rejects.toThrow("Only L2 can escalate this ticket");
   });
 
   it("should throw if ticket is already at L3", async () => {
@@ -328,6 +355,15 @@ describe("escalateTicket", () => {
     await expect(
       escalateTicket(VALID_ID, mockUser, { note: "escalating", assignedTo: l2UserId }),
     ).rejects.toThrow("already at L3");
+  });
+
+  it("should throw if L2 ticket has no critical value assigned", async () => {
+    const ticket = makeTicketDoc({ currentLevel: "L2", criticalValue: null, status: "Attending" });
+    mockTicketFindById.mockReturnValue({ session: jest.fn().mockResolvedValue(ticket) });
+
+    await expect(
+      escalateTicket(VALID_ID, mockL2User, { note: "escalating", assignedTo: l2UserId }),
+    ).rejects.toThrow("Critical value must be assigned before escalating to L3");
   });
 
   it("should throw if L2 ticket has no C1/C2 critical value", async () => {
